@@ -1,0 +1,44 @@
+{% extends 'basedocumentation.html' %}
+
+{% load humanize %}
+
+{% block title %}Gifts{% endblock %}
+
+{% block extra_extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="/static/css/ui-lightness/jquery-ui-1.8.16.custom.css" type="text/css" media="screen">
+{{ transfer_form.media.css }}
+<script type="text/javascript" src="{{ jquery_ui_home }}" ></script>
+{{ transfer_form.media.js }}
+{% endblock %}
+
+{% block doccontent %}
+<h2>Unglue.it Credits</h2>
+<p>
+You have a balance of {{ user.credit.balance }} Unglue.it credits. <br />
+You have pledged {{ user.credit.pledged }} Unglue.it credits to ungluing campaigns.<br />
+You have {{ user.credit.available }} Unglue.it credits available to pledge or transfer.<br />
+</p>
+<div class="clearfix">
+<h2>Unglue.it Credit Transfers</h2>
+{% if transfer_message %}
+<p>{{ transfer_message }}
+{% if transfer_amount %}
+<br /> Recipient: <a href="{% url 'supporter' recipient %}">{{ recipient }}</a>
+<br /> Amount: {{ transfer_amount }} Unglue.it credits
+{% endif %}
+</p>
+{% endif %}
+<p>
+You may transfer up to {{ user.credit.available }} Unglue.it credits to another Unglue.it user.<br />
+</p>
+<form action="#" method="POST">
+	{% csrf_token %}
+    {{ transfer_form.as_p }}
+	<input id="transfer_submit" type="submit" name="transfer" value="Transfer Credits" />
+</form>
+</div>
+<div class="clearfix">
+{% endblock %}
+
+

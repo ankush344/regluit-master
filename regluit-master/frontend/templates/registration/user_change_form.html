@@ -1,0 +1,28 @@
+{% extends 'registration/registration_base.html' %}
+
+{% block title %}Change User Data{% endblock %}
+{% block doccontent %}
+<h2>Changing Your Username</h2>
+
+<p> If you change your username, the web address for your profile page will change as well.</p>
+<div>
+<p> <b>Your current username:</b> {{ user.username }}</p>
+<form method="POST" action="#">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" name="change_username" value="Change username" id="submit_username">
+</form>
+</div>
+
+<div>
+<h2>Other Account Tools</h2>
+<ul>
+<li>Want to <a href="{% url 'libraryauth_password_change' %}">change your password</a>?</li>
+<li>... or <a href="{% url 'manage_account' %}">manage your pledges and payment info</a>?</li>
+<li>... or <a href="{% url 'email_change' %}">change your email address</a>?</li>
+<li>... or <a href="{% url 'notification_notice_settings' %}">manage your contact preferences</a>?</li>
+</ul>
+</div>
+{% endblock %}
+
+

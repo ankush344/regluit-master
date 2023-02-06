@@ -1,0 +1,53 @@
+{% extends 'email_change/base.html' %}
+
+
+{% block extra_extra_head %}
+{{ block.super }}
+<style type="text/css">
+#login {
+    width: auto;
+    display: block;
+}
+</style>
+{% endblock %}
+
+{% block title %}Change your librarian preferences{% endblock %}
+
+{% block ce_content %}
+{% if messages %}
+<ul class="errors">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+<h3>Librarian Tools</h3>
+If you enable Librarian tools, you'll find links to download MARC record(s) at the bottom of many Unglue.it pages.
+<ul>
+<li> work pages</li>
+<li> lists of works</li>
+<li> supporter pages </li>
+</ul>
+
+{% if request.user.is_authenticated %}
+<form method="post" action="{% url 'marc_config' %}">
+    {% csrf_token %}
+<div>
+    {% if request.user.libpref %}
+        <p>You have enabled librarian tools. </p>
+        {{ form }}
+        <input type="submit" value="Disable Librarian Tools" name="disable" />
+    {% else %}
+        <p>You have not enabled librarian tools. 
+        {{ form }}
+        <br />
+        <input type="submit" value="Enable Librarian Tools"  name="enable" />
+    
+    {% endif %}
+</div>
+</form>
+<p>
+Back to <a href="{% url 'marc' %}">record download page</a>
+</p>
+{% endif %}
+{% endblock %}

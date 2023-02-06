@@ -1,0 +1,98 @@
+{% load truncatechars %}
+{% load lang_utils %}
+{% load explore %}{% explore %}
+            <div class="jsmodule">
+                <h3 class="jsmod-title"><span>Explore</span></h3>
+                <div class="jsmod-content">
+                    <ul class="menu level1">
+
+                        <li class="first parent">
+                            <span>Show me...</span>
+                            <ul class="menu level2">
+                            {% if not request.user.is_anonymous %}
+                                <li><a href="{% url 'supporter' request.user %}"><span>My Faves</span></a></li>
+                                {% for library in request.user.profile.libraries %}
+                                    <li><a href="{% url 'library' library.user %}"><span>{{ library }}</span></a></li>
+                                {% endfor %}
+                                <li>
+                            {% endif %}
+                                <li><a href="{% url 'free' %}"><span>Free eBooks!</span></a>
+                                {% if work %}
+                                    <ul class="menu level3">
+                                        {% if work.doab %}
+                                            <li><a href="{% url 'faceted_list' 'id/doab' %}?order_by=popular">Books in DOAB</a></li>
+                                        {% endif %}
+                                        {% if work.gtbg %}
+                                            <li><a href="{% url 'faceted_list' 'id/gtbg' %}?order_by=popular">Books in Project Gutenberg</a></li>
+                                        {% endif %}
+                                        {% for subject in work.subjects.all %}
+                                            {% if subject.is_visible and subject.free_works.1 %}
+                                                <li><a href="{% url 'faceted_list' subject.kw %}"><span>{{ subject }}</span></a></li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                                </li>
+                                {% if top_pledge %}
+                                <li>Pledge to...
+                                    <ul class="menu level3">
+                                    {% for campaign in top_pledge %}
+                                    <li><a href="{% url 'work' campaign.work.id %}">
+                                        <img class="thumbnail" src="{{ campaign.work.cover_image_thumbnail }}" title="{{ campaign.work.title }}"/>
+                                        <span class="thumbnail-caption">{{ campaign.work.title }}</span>
+                                    </a></li>
+                                    {% if forloop.counter == 4 %}
+                                    <li><a href="{% url 'campaign_list' 'pledge' %}"><span>...more</span></a></li>
+                                    {% endif %}
+                                    {% endfor %}
+                                    </ul>
+                                </li>
+                                {% endif %}
+                                <li><a href="{% url 'campaign_list' 'b2u' %}"><span>Buy to unglue...</span></a></li>
+                                <li><a href="{% url 'campaign_list' 't4u' %}"><span>Thank for ...</span></a></li>
+                                {% if not request.user.is_anonymous %}
+                                    <li><a href="{% url 'comment' %}"><span>Latest Comments</span></a></li>
+                                {% endif %}
+                                <li><a href="{% url 'work_list' 'popular' %}"><span>Site Favorites</span></a></li>
+                                <li><a href="{% url 'work_list' 'new' %}"><span>Latest Favorites</span></a></li>
+                                <!--<li><a href="{% url 'work_list' 'recommended' %}"><span>Noteworthy</span></a></li>-->
+                            {% if pubname %}
+                                <li>{{ pubname }}...
+                                <ul class="menu level3">
+                                    <li class="first"><a href="{% url 'bypub_list' 'popular' pubname %}"><span>Most popular</span></a></li>
+                                    <li><a href="{% url 'bypub_list' pubname %}"><span>By Title</span></a></li>
+                                </ul>
+                                </li>
+                             {% endif %}
+                            </ul>
+                        </li>
+                        {% if show_langs %}
+                        <li class="parent">
+                            <span class="show_langs">Languages...</span>
+                            <ul class="menu level3" id="lang_list">
+                                <li class="first{% ifequal pub_lang '' %} active_lang{% endifequal %}"><a href="?">ALL</a></li>
+                                {% for wished_lang in WISHED_LANGS %}
+                                <li{% ifequal pub_lang wished_lang %} class="active_lang"{% endifequal %}><a href="?pub_lang={{wished_lang}}">{{wished_lang|ez_lang_name_local}}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                        {% endif %}
+                        {% if ungluers %}
+                        <li class="parent">
+                            <span>Ungluers</span>
+                            <ul class="menu level2">
+                            {% for ungluer in ungluers %}
+                                <li class="first"><a href="{% url 'supporter' ungluer %}">
+									<img src="{{ungluer.profile.avatar_url}}" height="30" width="30" alt="Avatar for {{ungluer}}" title="{{ungluer}}" /></a>
+                                	<a href="{% url 'supporter' ungluer %}"><span class="ungluer-name">{{ungluer|truncatechars:20}}</span>
+                                </a></li>
+                            {% endfor %}
+                            {% if library %}
+                                <li class="first"><a href="{% url 'library_users' library.id %}"><span>More from {{ library }}</span></a></li>
+                            {% endif %}
+                            </ul>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>

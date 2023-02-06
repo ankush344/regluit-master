@@ -1,0 +1,26 @@
+{% extends 'basepledge.html' %}
+
+{% load humanize %}
+
+{% block title %}Credit card processing Issue{% endblock %}
+
+{% block doccontent %}
+<div style="height:15px"></div>
+    
+<div class="jsmodule rounded clearfix">
+    <div class="jsmod-content">
+
+	<div><h2>Credit Card not Authorized</h2>
+		<div>
+		<p>Unglue.it would like to accept your credit card, but we encountered a problem: <b>{{transaction.error}}</b> {% if request.user.account_set %}Please <a href="{% url 'manage_account' %}">Update your credit card</a>,
+		{% else %}Please <a href="{{ request.get_full_path }}">try again</a>,{% endif %}
+		 or  <a href="{% url 'feedback' %}?page={{request.build_absolute_uri|urlencode:""}}">contact us</a>.
+        </p>
+        </div>
+	</div>
+
+	</div>
+</div>
+{% endblock %}
+
+

@@ -1,0 +1,1 @@
+New ebook files for {{ work.title }} are available for download!

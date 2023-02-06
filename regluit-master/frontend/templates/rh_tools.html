@@ -1,0 +1,44 @@
+{% extends 'basedocumentation.html' %}
+
+{% block title %} for Rightsholders {% endblock %}
+{% block extra_extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="/static/css/ui-lightness/jquery-ui-1.8.16.custom.css" type="text/css" media="screen">
+<link href="/static/selectable/css/dj.selectable.css" type="text/css" media="all" rel="stylesheet" />
+<script type="text/javascript" src="{{ jquery_ui_home }}"></script>
+<script type="text/javascript" src="/static/selectable/js/jquery.dj.selectable.js"></script>
+
+{% endblock %}
+
+{% block topsection %}
+{% endblock %}
+
+{% block doccontent %}
+
+<h1>Unglue.it for Rightsholders</h1>
+
+<div class="presstoc"><div class="pressemail">
+Any questions not covered here?  Please email us at <a href="mailto:rights@ebookfoundation.org">rights@ebookfoundation.org</a>.
+</div></div>
+<h2>Contents</h2>
+<ul class="bullets">
+<li><a href="{% url 'rightsholders' %}#getting_started">Getting Started</a></li>
+<li><a href="{% url 'rightsholders' %}#distributing">Distributing Free Books Through Unglue.it</a></li>
+<li><a href="{% url 'rightsholders' %}#how_to">Becoming an Unglue.it Rights Holder</a></li>
+<li><a href="{% url 'rightsholders' %}#about_campaigns">About Campaigns</a></li>
+</ul>
+
+{% if request.user.rights_holder.count %}
+<h2>Other tools</h2>
+<ul class="bullets">
+
+<li><a href="{% url 'rh_yours' %}#your_rhs">Rights Holders That You Administer</a></li>
+<li><a href="{% url 'rh_campaigns' %}#managed_campaigns">Books/Campaigns You Manage</a></li>
+<li><a href="{% url 'rh_works' %}#open_campaigns">Works You Have Claimed</a></li>
+
+</ul>
+{% endif %}
+{% block toolcontent %}{% endblock %}
+<h2>More Questions</h2>
+<p> Check the FAQ to the left, or <a href="{% url 'feedback' %}?page={{request.build_absolute_uri|urlencode:""}}">send us feedback.</a>
+{% endblock %}

@@ -1,0 +1,1 @@
+The campaign for {{campaign.work.title}} has almost succeeded!

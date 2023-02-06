@@ -1,0 +1,68 @@
+{% extends "registration/registration_base.html" %}
+{% load sass_tags %}
+
+{% block extra_css %}
+<link type="text/css" rel="stylesheet" href="{% sass_src 'scss/campaign2.scss' %}"  />
+<link type="text/css" rel="stylesheet" href="{% sass_src 'scss/pledge.scss' %}" />
+{% endblock %}
+
+{% block extra_js %}
+
+<script type="text/javascript" src="/static/js/definitions.js"></script>
+<script type="text/javascript">
+var $j = jQuery.noConflict();
+$j("#js-leftcol").ready(function() {
+  $j(".answer").hide();
+  $j(".faq").click(function() {
+    $j(this).next(".answer").toggle();
+  });
+});
+</script>
+{% endblock %}
+{% block extra_extra_head %}
+<!-- extra head content in descendants goes in extra_extra_head, not extra_head, to avoid overwriting the documentation.css include -->
+{% endblock %}
+
+{% block title %}{% endblock %}
+
+{% block topsection %}
+{% endblock %}
+
+{% block content %}
+<div id="main-container">
+	<div class="js-main pledge">
+		<div id="js-leftcol">
+			{% if faqmenu == "pledge" %}
+			{% include "faq_pledge.html" %}
+			{% endif %}
+			{% if faqmenu == "cancel" %}
+			{% include "faq_pledge_cancel.html" %}
+			{% endif %}
+			{% if faqmenu == "complete" %}
+			{% include "explore.html" %}
+			{% endif %}
+			{% if faqmenu == "purchase" %}
+			{% include "faq_purchase.html" %}
+			{% endif %}
+		</div>
+		<div id="js-maincol-fr" class="have-right doc">
+			<div class="js-maincol-inner">
+				<div id="content-block">
+					<div id="js-main-container" {% if faqmenu == "complete" %}class="pledge-container"{% endif %}>
+            			<div class="js-main-container-inner">
+
+    
+{% block doccontent %}
+{% endblock %}
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>    
+
+{% endblock %}
+
+

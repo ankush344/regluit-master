@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+
+{% load comments %}
+{% load humanize %}
+{% load lib_acqs %}
+{% load purchased %}
+{% load sass_tags %}
+{% block title %}&#151;
+    {% if work.is_free %}
+        {{ work.title }} is a Free eBook. {% for fmt in  work.formats %}[{{ fmt }}]{% endfor %}
+    {% else %}
+        Help us make  {{ work.title }} a Free eBook!
+    {% endif %}{% if action == 'editions' %} – All Editions{% endif %}
+{% endblock %}
+{% block extra_meta %}
+<meta property="og:title" content="{{ work.title }}" />
+<meta property="og:type" content="book" />
+<meta property="og:url" content="https://unglue.it{% url 'work' work.id %}" />
+<meta property="og:image" content="{{ work.cover_image_thumbnail }}" />
+<meta property="og:site_name" content="Unglue.it" />
+{% for author in work.relators %}<meta property="book:author" content="{{ author.name }}" />{% endfor %}
+{% if work.first_isbn_13 %}<meta property="book:isbn" content="{{ work.first_isbn_13 }}" />{% endif %}
+{% endblock %}
+{% block extra_css %}
+<link type="text/css" rel="stylesheet" href="{% sass_src 'scss/campaign2.scss' %}"  />
+<link type="text/css" rel="stylesheet" href="{% sass_src 'scss/bookview.scss' %}"  />
+{% if user.is_staff or user in work.last_campaign.managers.all %}
+    <link rel="stylesheet" href="/static/css/ui-lightness/jquery-ui-1.8.16.custom.css" type="text/css" media="screen">
+    {{ kwform.media.css }}
+{% endif %}
+{% endblock %}
+
+{% block content %}
+{% with work.id as work_id %}
+    <div class="wrapper">
+        <div class="bookImage">
+            {% if work.uses_google_cover %}
+                <a href="{{ work.googlebooks_url }}">
+                    <img src="{{ work.cover_image_thumbnail }}" alt="Find {{ work.title }} at Google Books" title="Find {{ work.title }} at Google Books" width="131" height="192" />
+                </a>
+            {% else %}
+                <img itemprop="image" src="{{ work.cover_image_thumbnail }}" alt="{{ work.title }}" title="{{ work.title }}" width="131" height="192" />
+            {% endif %}
+        </div>
+        <div class="bookDescription">
+            <div class="pubinfo">
+                <h2 class="book-name" itemprop="name">{{ work.title }}</h2>
+                <h3 class="book-author">
+                    <span  itemprop="author">
+                        <a href="{% url 'search' %}?q={{ work.relators.0.author.name|urlencode }}&amp;ty=au" />
+                            {{ work.relators.0.name }}
+                        </a>
+                    </span>
+                    {% if work.authors.count == 2 %}
+                    and <span  itemprop="author"><a href="{% url 'search' %}?q={{ work.relators.1.author.name|urlencode }}&amp;ty=au" />{{ work.relators.1.name }}</a></span>
+                {% endif %}{% if work.relators.count > 2 %}{% for author in work.relators %}{% if not forloop.first %}, <span  itemprop="author"><a href="{% url 'search' %}?q={{ author.author.name|urlencode }}&amp;ty=au" />{{ author.name }}</a></span>{% endif %}{% endfor %}
+                {% endif %}
+                </h3>
+                <h3 class="book-year">
+                    {% if work.last_campaign.publisher %}
+                    <span itemprop="publisher"><a href="{% url 'bypubname_list' work.last_campaign.publisher.name.id %}">{{ work.last_campaign.publisher }}</a></span>
+                    {% endif %}
+                    <span itemprop="datePublished">{{ work.publication_date }}</span>
+                    <meta itemprop="inLanguage" content="work.language" />
+                    <meta itemprop="typicalAgeRange" content="work.age_range" />
+                </h3>
+            </div>
+            <div  itemprop="description">
+            {% if status == 'ACTIVE'  %}
+                {% if work.last_campaign.type != 3 %}
+                    {{ work.last_campaign.description|safe }}
+                {% else %}
+                    {{ work.description|safe }}
+                {% endif %}
+            {% elif  work.description %}
+                {{ work.description|safe }}
+            {% else %}
+                {{ work.last_campaign.description|safe }}
+            {% endif %}
+
+            <div class="description-more-content">
+                {% if action == 'display' %}
+                    {% if status == 'ACTIVE' %}
+                        {% if work.last_campaign.type == 1 %}
+                            <h3 class="tabcontent-title">A campaign is running to unglue <i>{{work.title}}</i>!</h3>
+                            <p>The rights holder, {% for claim in work.claim.all %}
+                                {% if claim.status == 'active' %}
+                                {{ claim.rights_holder.rights_holder_name }}
+                                {% endif %}
+                            {% endfor %}
+                            , has agreed to release <i>{{work.title}}</i> to the world as a Creative Commons licensed ebook (<a href="{{ work.last_campaign.license_url }}">{{ work.last_campaign.license }}</a>) if ungluers can join together to raise ${{ work.last_campaign.target|floatformat:0|intcomma }} by {{ work.last_campaign.deadline }}.
+                            You can help!</p>
+                        {% endif %}
+                        {% if work.last_campaign.type == 2 %}
+                            <h3 class="tabcontent-title">A Buy-to-Unglue Campaign is running to unglue <i>{{work.title}}</i>!</h3>
+                            <p>The rights holder, {% for claim in work.claim.all %}
+                                {% if claim.status == 'active' %}
+                                {{ claim.rights_holder.rights_holder_name }}
+                                {% endif %}
+                            {% endfor %}
+                            , has agreed to release <i>{{work.title}}</i> to the world as a Creative Commons licensed ebook (<a href="{{ work.last_campaign.license_url }}">{{ work.last_campaign.license }}</a>) on {{ work.last_campaign.cc_date }}. For every copy that ungluers purchase, that date gets sooner. ${{ work.last_campaign.left|floatformat:0|intcomma }} of sales will unglue the book <i>TODAY</i>.
+                            You can help!</p>
+                        {% endif %}
+                        {% if work.last_campaign.type == 3 %}
+                            <h3 class="tabcontent-title">A Thanks-for-Ungluing Campaign is running to reward the creators of <i>{{work.title}}</i>!</h3>
+                            <p>The rights holder, {% for claim in work.claim.all %}
+                                {% if claim.status == 'active' %}
+                                {{ claim.rights_holder.rights_holder_name }}
+                                {% endif %}
+                            {% endfor %}
+                            , has released <i>{{work.title}}</i> to the world as a Creative Commons licensed ebook (<a href="{{ work.last_campaign.license_url }}">{{ work.last_campaign.license }}</a>) .
+                            You can help us say "Thank You!" so that other creators will do the same.</p>
+                        {% endif %}
+                        <h4>Campaign details: the fine print</h4>
+                        {{ work.last_campaign.details|safe }}
+                    {% endif %}
+
+                    {% if status == 'SUCCESSFUL' %}
+                        <h3 class="tabcontent-title">A campaign has succeeded to unglue <i>{{work.title}}</i>!</h3>
+                        <p>The rights holder, {% for claim in work.claim.all %}
+                            {% if claim.status == 'active' %}
+                            {{ claim.rights_holder.rights_holder_name }}
+                            {% endif %}
+                        {% endfor %}
+                        , has agreed to release <i>{{work.title}}</i> to the world as a Creative Commons licensed ebook (<a href="{{ work.last_campaign.license_url }}">{{ work.last_campaign.license }}</a>) thanks to the efforts of ungluers like you.</p>
+                        <h4>Campaign details: the fine print</h4>
+                        {{ work.last_campaign.details|safe }}
+                    {% endif %}
+                    {% if status != 'ACTIVE' and status != 'SUCCESSFUL' %}
+                        <h4> Rights Information </h4>
+                        {% if claimstatus == 'one_active' %}
+                          <p>This work has been claimed by {{ rights_holder_name }}.</p>
+                        {% else %}
+                            {% if claimstatus == 'disputed' %}
+                                <p>Rights claims are pending.</p>
+                            {% else %}
+                                {% if claimstatus == 'one_pending' %}
+                                    <p>A claim for this work by {{ rights_holder_name }} is pending.</p>
+                                {% else %}
+                                    {% if request.user.rights_holder.all.count %}
+                                        Is this work yours?  Claim it: <br /><br />
+
+                                        <form method="GET" action="{% url 'claim' %}">
+                                            {% csrf_token %}
+                                            {{ claimform.user }}
+                                            {{ claimform.work }}
+                                            {{ claimform.rights_holder }}
+                                            <input type="submit" name="submit" value="Claim" />
+                                         </form><br />
+                                    {% else %}
+                                        Are you the author or publisher of this work? If so, you can claim it as yours by <a href="{% url 'rightsholders' %}">registering as an Unglue.it rights holder</a>.
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                    {% if work.is_free %}
+                        <h4>Downloads</h4>
+                        <div class="pledged-info">
+                            This work has been downloaded {{ work.download_count }} times via unglue.it ebook links.
+                            <ol>
+                            {% for ebook in work.ebooks.all %}
+                            <li>{{ ebook.download_count }} -  {{ ebook.format }} {% if ebook.version_label %}  ({{ ebook.version_label }}) {% endif %}({{ ebook.rights }}) at {{ ebook.provider }}. </li>
+                            {% endfor %}
+                            </ol>
+                        </div>
+                        {% if user.is_staff %}
+                            <p>
+                            <a href="{% url 'feature' work.id %}">Feature this work today.</a>
+                            </p>
+                        {% endif %}
+                    {% endif %}
+                    {% if user.is_staff %}
+                        <h4>Related Works</h4>
+                        <div><a href="{% url 'merge' work_id  %}">Merge other works into this one</a></div>
+                    {% endif %}
+                {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="bookSidebar">
+            {% if has_online_book %}
+            <div class="bookRead">
+                <a href="{% url 'read' work_id %}">
+                    <button class="button expanded success">Read</button>
+                </a>
+            </div>
+            {% endif %}
+            <div class="bookDownload">
+                <a href="{% url 'download' work_id %}">
+                    <button class="button expanded success">Download</button>
+                </a>
+            </div>
+            <div class="bookDonate">
+                <a href="{% url 'download' work_id %}">
+                    <button class="button expanded success">Donate</button>
+                </a>
+            </div>
+            <div class="book-sidebar-item">
+                <div class="btn_wishlist" id="wishlist_actions">
+                    {% if request.user.is_anonymous %}
+                        <div class="create-account">
+                            <span title="{% url 'work' work_id %}"><a href="{% url 'superlogin' %}?next={{ request.get_full_path|urlencode }}">Login to Fave</a></span>
+                        </div>
+                    {% elif request.user.id in work.last_campaign.supporters %}
+                        <div class="add-wishlist">
+                            <span class="on-wishlist">Faved!</span>
+                        </div>
+                    {% elif work in request.user.wishlist.works.all %}
+                        <div class="remove-wishlist-workpage">
+                            <span id="w{{ work_id }}">Remove from My Faves</span>
+                        </div>
+                    {% else %}
+                        <div class="add-wishlist">
+                            <span class="work_id" id="w{{ work_id }}">Add to My Faves</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="book-sidebar-item">
+                <a rel="nofollow" class="find-goodreads" href="{% url 'work_goodreads' work_id %}">
+                    <img src="/static/images/supporter_icons/goodreads_square.png" title="Find on GoodReads"  alt="Find on GoodReads" />
+                    <span>GoodReads</span>
+                </a>
+            </div>
+            <div class="book-sidebar-item">
+                <a rel="nofollow" class="find-librarything" href="{% url 'work_librarything' work_id %}">
+                    <img src="/static/images/supporter_icons/librarything_square.png" title="Find on LibraryThing" alt="Find on LibraryThing" />
+                    <span>LibraryThing</span>
+                </a>
+            </div>
+            <div class="book-sidebar-explore">
+                {% include "explore.html" %}
+            </div>
+        </div>
+        <div class="bookComments">
+            <h2>Comments</h2>
+            {% render_comment_list for work %}
+            {% if user.is_authenticated %}
+                {% render_comment_form for work %}
+            {% else %}
+            <p>You must be <a href="{% url 'superlogin' %}?next={{ request.get_full_path|urlencode }}">logged in</a> to comment.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endwith %}
+{% endblock %}

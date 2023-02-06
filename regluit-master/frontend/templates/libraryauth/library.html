@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+
+{% load el_pagination_tags %}
+{% load sass_tags %}
+{% load truncatechars %}
+
+{% block title %} &#8212; {{ library }}{% endblock %}
+{% block extra_css %}
+<link type="text/css" rel="stylesheet" href="{% sass_src 'scss/supporter_layout.scss' %}" />
+<link type="text/css" rel="stylesheet" href="{% sass_src 'scss/searchandbrowse2.scss' %}" />
+<link type="text/css" rel="stylesheet" href="{% sass_src 'scss/book_list.scss' %}" />
+<link type="text/css" rel="stylesheet" href="{% sass_src 'scss/book_panel2.scss' %}" />
+{% endblock %}
+{% block extra_js %}
+<script type="text/javascript" src="/static/js/wishlist.js"></script>
+<script type="text/javascript" src="{{ jquery_ui_home }}"></script>
+<script type="text/javascript" src="/static/js/import_books.js"></script>
+<script type="text/javascript" src="/static/js/counter.js"></script>
+
+<script type="text/javascript" src="/static/js/toggle.js"></script>
+<script type="text/javascript" src="/static/js/tabs.js"></script>
+
+<!-- highlight LT/GR add functions when people click on import divs -->
+<script type="text/javascript">
+var $j = jQuery.noConflict();
+function highlightTarget(targetdiv) {
+	var target = $j(targetdiv);
+    target.css({"background": "#8dc63f"}).animate(
+        {backgroundColor: "white"}, 1500
+    );
+};
+</script>
+{% endblock %}
+{% block extra_head %}
+<link rel="alternate" type="application/atom+xml" title="feed for books from {{ supporter }}'s ungluing list" href="feed" />
+{% endblock %}
+
+
+{% block topsection %}
+<div id="locationhash">{% ifequal activetab '#3' %}#1{% else %}{{ activetab }}{% endifequal %}</div>
+{% ifequal supporter request.user %}
+    <div class="launch_top pale">You are logged in as the administrator of {{ library }}
+    </div>
+{% endifequal %}
+
+<div id="js-topsection">
+    <div class="js-main">
+        <div class="js-topnews">
+            <div class="js-topnews1">
+                <div class="js-topnews2">
+                    <div class="js-topnews3">
+                        <div class="user-block" itemscope itemtype="http://schema.org/Person">
+                            <div id="user-block1">
+                                <div class="block-inner">
+                                    <img class="user-avatar" src="{{ library.user.profile.avatar_url }}" height="50" width="50" alt="Avatar for {{ supporter }}" title="Avatar" />
+                                    <span class="user-name">
+                                        <a href="#"><span itemprop="name">{{ library }}</span></a>
+                                    </span>
+                                </div>
+                                <span class="user-badges">
+                                    {% if library.user.profile.badges.all %}
+                                        {% for badge in library.user.profile.badges.all %}
+                                            <img src="{{ badge.path }}" alt="{{ badge.description }}" title="{{ badge.description }}" width="26" height="26" class="{{ badge.name }}" />                                
+                                        {% endfor %}
+                                    {% endif %}
+                                </span>
+                            </div>
+                            {% if request.user.is_authenticated %}
+                            {% if library.group in request.user.groups.all  %}
+                                <div class="user-block23">
+                                    <i>{{ library }} is {{ request.user }}'s Library!</i>
+                                </div>
+                                <div class="user-block4">
+                                    <div class="social">
+                                    {% if library.user.profile.home_url %}
+                                       <a href="{{ library.user.profile.home_url }}" class="nounderline">
+                                           <img src="/static/images/supporter_icons/home_square.png" alt="{{ supporter }}'s homepage" title="{{ supporter }}'s Homepage"  />
+                                       </a>
+                                    {% endif %}
+                                    {% if library.user.profile.facebook_id %}
+                                        <a href="https://www.facebook.com/profile.php?id={{library.user.profile.facebook_id}}" class="nounderline">
+                                            <img src="/static/images/supporter_icons/facebook_square.png" alt="{{ supporter }}'s Facebook" title="{{ supporter }}'s Facebook"  />
+                                        </a>
+                                    {% endif %}
+                                    {% if library.user.profile.twitter_id %}
+                                        <a href="https://twitter.com/#!/{{ library.user.profile.twitter_id }}" class="nounderline">
+                                            <img src="/static/images/supporter_icons/twitter_square.png" alt="{{ supporter }}'s Twitter" title="{{ supporter }}'s Twitter"  />
+                                        </a>
+                                    {% endif %}
+                                    {% if library.user.profile.goodreads_user_link %}
+                                        <a href="{{library.user.profile.goodreads_user_link}}" class="nounderline">
+                                            <img src="/static/images/supporter_icons/goodreads_square.png" alt="{{ supporter }}'s profile on GoodReads" title="{{ supporter }}'s page on GoodReads"  />
+                                        </a>
+                                    {% endif %}
+                                    {% if library.user.profile.librarything_id %}
+                                        <a href="https://www.librarything.com/profile/{{ library.user.profile.librarything_id }}" class="nounderline">
+                                            <img src="/static/images/supporter_icons/librarything_square.png" alt="{{ supporter }}'s profile on LibraryThing" title="{{ supporter }}'s page on LibraryThing"  />
+                                        </a>
+                                     {% endif %}
+                                   </div>
+                                </div>
+                            {% else %}
+                                <div class="user-block24">
+                                    {% include library.join_template %}
+                                </div>
+                            {% endif %}
+                            {% else %}
+                                <div class="user-block24">
+                                    <p> To join a library or borrow books, you'll need to <a href="{% url 'superlogin' %}?next={% url 'library' library.user %}">sign in</a> or <a href="{% url 'registration_register' %}?next={% url 'library' library.user %}">create an account</a>. </p>
+                                </div>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+    </div>
+</div>
+
+{% endblock %}
+
+{% block content %}
+
+    <div id="main-container">
+    <div class="js-main">
+        <div id="js-leftcol">
+            {% include "explore.html" %}
+        </div>
+
+        <div id="js-maincol-fr">
+        <div class="js-maincol-inner">
+            <div id="content-block">
+
+                <div class="content-block-heading wantto" id="tabs">
+                    <ul class="tabs">
+                        <li class="tabs1"><a href="#">Unglued</a></li>
+                        <li class="tabs2"><a href="#">Available</a></li>
+                    </ul>
+                                        
+                        <ul class="book-list-view">
+                            <li>View As:</li>
+                            <li class="view-list">
+                                <a href="#" id="toggle-list">
+                                <img src="/static/images/booklist/view-list.png" alt="view list" title="view list" />
+                                </a>
+                            </li>
+                            <li class="view-list">
+                                <a href="#" id="toggle-panel">
+                                <img src="/static/images/booklist/view-icon.png" alt="view icon" title="view icon" />
+                                </a>
+                            </li>
+                        </ul>
+                </div>
+                {% if wishlist %}
+                <div id="content-block-content">
+                    {% if not works_active.count and not works_unglued.count %}
+                        {% ifequal request.user supporter %}
+                        <div class="empty-wishlist">
+                            <h2 style="padding-left:35px;">Your Unglue.it faves will be listed here.</h2>
+                            <p>The "Available" tab will show all the books you have licensed though Unglue.it.
+                            The "Unglued" tab will show public domain, creative commons, and unglued titles that you add to your list of faves</p>
+                        </div>
+                        {% else %}
+                        <div class="empty-wishlist">
+                            It looks like {{ library }} is just getting started, and isn't offering any books just yet.<br /><br />
+                        {% endifequal %}
+                    {% else %}
+                    
+                    {% if request.user.is_anonymous %}
+                    <div class="tabs-1 anon_about">
+                    {% if works_unglued %}
+                    {{ supporter }} wants you to know about these free books.  <a href="/about/unglued/" class="hijax">Find out why.</a>
+                    {% else %}
+                    {{ supporter }} isn't promoting any free books yet.  <a href="/about/unglued_empty/" class="hijax">Find out how you can.</a>
+                    {% endif %}
+                    </div>
+                    <div class="tabs-2 anon_about">
+                    {% if works_active %}
+                    {{ supporter }} is helping to make these books free.  <a href="/about/active/" class="hijax">Find out how.</a>
+                    {% else %}
+                    {{ supporter }} isn't ungluing books at the moment.  <a href="/about/active_empty" class="hijax">Find out how you can.</a>
+                    {% endif %}
+                    </div>
+                    <div class="tabs-3 anon_about">
+                    {% if works_wished %}
+                    {{ supporter }} wants these books to be free.  <a href="/about/wishlist/" class="hijax">Find out how to help.</a>
+                    {% else %}
+                    {{ supporter }} hasn't decided which books to give the world yet.  <a href="/about/wishlist_empty/" class="hijax">Learn more.</a>
+                    {% endif %}
+                    </div>
+                    {% endif %}
+
+                    {% lazy_paginate 20 works_unglued using "works_unglued" %}
+                    {% for work in works_unglued %}
+                    <div class="{% cycle 'row1' 'row2' %}">
+					{% with work.googlebooks_id as googlebooks_id %}
+                    {% include "book_panel.html" %}
+                    {% endwith %}
+                    </div>
+                    {% endfor %}
+                    <div class="pagination content-block-heading tabs-1">
+                        {% get_pages %}
+                        {% for page in pages %}
+                        	<a href="{{ page.path }}#1" class="endless_page_link">{{ page.number }}</a>
+                        {% endfor %}
+                    </div>
+
+                    {% lazy_paginate 20 works_active using "works_active" %}
+                    {% for work in works_active %}
+                    <div class="{% cycle 'row1' 'row2' %}">
+					{% with work.googlebooks_id as googlebooks_id %}
+                    {% include "book_panel.html" %}
+                    {% endwith %}
+                    </div>
+                    {% endfor %}
+                    <div class="pagination content-block-heading tabs-2">
+                        {% get_pages %}
+                        {% for page in pages %}
+                        	<a href="{{ page.path }}#2" class="endless_page_link">{{ page.number }}</a>
+                        {% endfor %}
+                    </div>
+
+                    
+                    {% endif %}
+                </div>
+            </div>   
+                {% endif %}
+        </div>
+        </div>
+    </div>
+    </div>
+
+{% endblock %}

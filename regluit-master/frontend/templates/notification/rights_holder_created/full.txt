@@ -1,0 +1,20 @@
+Your Rights Holder Agreement for {{ rights_holder.rights_holder_name }} has been received and Unglue.it staff is reviewing it.
+
+Here's the information we received - we'll use this to verify that you really exist and can be relied upon to fulfill your obligations. Once we've reviewed and approved the agreement, you'll receive by email a digitally signed copy for your reference.
+
+Rights Holder: {{ rights_holder.rights_holder_name }}
+Unglue.it Username for Rights Holder: {{ rights_holder.owner.username }}
+Business Address: 
+{{ rights_holder.address }}
+Mailing Address: 
+{{ rights_holder.mailing }}
+Tel: {{ rights_holder.telephone }} 
+Email: {{ rights_holder.email }}
+Signer Name: {{ rights_holder.signer }}
+Signer Title: {{ rights_holder.signer_title }}
+Signature: {{ rights_holder.signature }}
+
+
+Need help with any of this?  Email us at rights@ebookfoundation.org.  
+
+The Unglue.it team

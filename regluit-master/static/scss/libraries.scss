@@ -1,0 +1,26 @@
+@import "variables.scss";
+
+.doc h2.unglueit_loves_libraries {
+    font-size: 110px;
+    text-align: center;
+}
+
+#widgetcode {
+    display: none;
+}
+
+ul.social.pledge {
+    margin: 0 !important;
+}
+
+ul.social.pledge li {
+    margin-top: 7px !important;
+}
+
+.clearfix {
+    margin-bottom: 14px;
+}
+
+a, dt a {
+    color: $medium-blue;
+}

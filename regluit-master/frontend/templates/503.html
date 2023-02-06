@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block news %}
+<div class="launch_top">
+    We estimate that we will be back online at 6:00 am EDT on Friday, Sept 9, 2016.
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="js-main">
+<h1>Unglue.it is currently undergoing maintenance</h1>
+
+<p>
+While you wait, why not like us on <a href="https://facebook.com/unglueit">Facebook</a>, follow us on <a href="https://twitter.com/unglueit">Twitter</a>, or subscribe to our <a href="https://blog.unglue.it">blog</a>?  We'll keep you up to date there with our progress fixing things.
+</p>
+
+<p>You can also help us by <a href="{% url 'feedback' %}">sending us feedback</a>.</p>
+
+<p>Thank you, and we're sorry for the inconvenience.</p>
+</div>
+{% endblock %}

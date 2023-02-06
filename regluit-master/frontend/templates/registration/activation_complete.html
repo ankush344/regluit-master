@@ -1,0 +1,23 @@
+{% extends 'registration/registration_base.html' %}
+
+{% block title %}Activation complete{% endblock %}
+{% block doccontent %}
+{% if not user.is_authenticated %}
+<div>
+<p>Thanks, your activation is complete!  You may now sign in using the username and password you set at registration:</p>
+{% with 'welcome' as next %}
+{% include "login_form.html" %}
+{% endwith %}
+</div>
+<br />
+<div>
+<a href="{% url 'libraryauth_password_reset' %}">Forgot</a> your password? 
+</div>
+{% else %}
+<div>
+You are already logged in as <a href="{% url 'supporter' user.username %}">{{ user.username }}</a>.
+</div>
+{% endif %}
+{% endblock %}
+
+

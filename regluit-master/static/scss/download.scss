@@ -1,0 +1,141 @@
+@import "variables.scss";
+@import "social_share.scss";
+@import 'settings';
+@import 'foundation';
+
+
+.download-body {
+    width: 100%;
+}
+
+.border {
+    @include one-border-radius(5px);
+    border: solid 2px $blue-grey;
+    margin: 5px auto;
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+.sharing {
+    float: right;
+    padding: 0.5% !important;
+    width: 23% !important;
+    min-width: 105px;
+
+    ul {
+        padding: 0.5% !important;
+    }
+
+    .jsmod-title {
+        @include one-border-radius(10px);
+        height: auto;
+
+        span {
+            padding: 5% !important;
+            color: white !important;
+            font-style: normal;
+        }
+    }
+}
+
+#widgetcode2 {
+    display: none;
+	border:1px solid $blue-grey;
+	@include one-border-radius(10px);
+	padding:10px;
+
+	textarea {
+	    max-width: 90%;
+	}
+}
+
+.btn_support.kindle{
+    height: 40px;
+
+    a {
+        width: auto;
+        font-size: $font-size-larger;
+    }
+}
+
+
+//
+
+.download_option.flexible {
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 7px 5px;
+
+    i {
+        vertical-align: middle;
+    }
+
+    .h4 {
+        margin-bottom: 0px;
+    }
+}
+
+.ebook_download {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex_ul {
+    display: flex;
+    flex-direction: column;
+}
+
+.askform {
+    max-width: 400px;
+}
+
+.download_footer {
+    padding: 15px;
+}
+
+.download_container {
+    margin: 0px 10px;
+}
+
+.dropbox_download_option {
+    min-width: 122px;
+}
+
+.download_option > * {
+    flex: 1;
+}
+
+.download-centered {
+    display: flex;
+    justify-content: center;
+}
+
+@include breakpoint (medium) {
+    .download_container {
+        width: 75%;
+        margin: auto;
+    }
+
+    #download_content {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+
+        .rh_ask, #askblock {
+            padding: 15px;
+            flex: 1 0 50%;
+        }
+
+    }
+
+    .download-label {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+}

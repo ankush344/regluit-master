@@ -1,0 +1,344 @@
+
+{% load humanize %}
+{% load purchased %}
+{% load lib_acqs %}
+{% load bookpanel %}
+{% with first_ebook=work.first_ebook thumbnail=work.cover_image_thumbnail author=work.authors_short title=work.title last_campaign=work.last_campaign status=work.last_campaign.status deadline=work.last_campaign.deadline workid=work.id wishlist=request.user.wishlist.works.all %}
+{% purchased %}{% lib_acqs %}{% bookpanel %}
+<div class="thewholebook listview tabs {% if tab_override %}{{tab_override}}{% elif first_ebook or status == 'SUCCESSFUL' %}tabs-1{% elif status == 'ACTIVE' %}tabs-2{% else %}tabs-3{% endif %}">
+<div class="listview book-list">
+    <div class="listview panelback side2">
+    	{% comment %} hover state of panel {% endcomment %}
+		<div class="greenpanel2">
+        {% if last_campaign %}
+            {% comment %}top section: campaign info + optional action button. Varies by campaign status.{% endcomment %}
+            {% if status == 'SUCCESSFUL' or license_is_active or borrowable %} 
+                <div class="greenpanel_top">
+                    {% comment %}bibliographic data{% endcomment %}
+                    <div class="white_text"> 
+                        <p><a href="{% if workid %}{% url 'work' workid %}{% else %}{% url 'googlebooks' googlebooks_id %}{% endif %}">{{ title }}</a></p>
+                        <p>{{ author }}</p>
+                    </div>
+                    {% comment %}link to work page{% endcomment %}
+                    <div class="moreinfo">
+                            <a href="{% if workid %}{% url 'work' workid %}{% else %}{% url 'googlebooks' googlebooks_id %}{% endif %}" target="_top">More Info</a> 
+                    </div>
+                    {% if purchased %}
+                    <div class="unglued_white">
+                        <b>{% if purchased.gifts.all.count %}A gift to you!{% else %}Purchased!{% endif %}</b>
+                    </div>  
+                    {% elif borrowed %}
+                        <b>Borrowed! </b>
+                        <p><b>until</b> {{ borrowed.expires|date:"M d, Y" }}</p>
+                    {% elif borrowable %}
+                    <div class="unglued_white">
+                        <b>Library has it!</b>
+                        <p><b>{{ lib_acqs.count }}</b>{% if lib_acqs.count == 1 %} copy{% else %} copies{% endif %}</p>
+                    </div>  
+                    {% else %}
+                    <div class="unglued_white">
+                        {% if  work.last_campaign.type == 3 %}
+                            <b>THANKED!</b>
+                            <p><b>${{ work.last_campaign.current_total|floatformat:0|intcomma }}</b> of thanks</p>
+                            <p> from <b>{{ work.last_campaign.supporters_count }}</b> ungluers</p>
+                            <p> and <b>{{ work.last_campaign.anon_count }}</b> others</p>
+                        {% else %}
+                            <b>UNGLUED!</b>
+                            <p><b>On:</b> {{ deadline|date:"M d, Y" }}</p>
+                            <p><b>Raised:</b> {{ work.last_campaign.current_total|floatformat:0|intcomma }}</p>
+                        {% endif %}
+                    </div>  
+                    {% endif %}
+                </div>
+                <div class="add_button">
+                    {% include "book_panel_addbutton.html" %}
+                </div>		
+                <div class="white_text bottom_button" >
+                {% if work.epubfiles %}
+                    <a href="{% url 'read' workid %}" class="hijax"><span class="read_itbutton button_text"><span>Read it Now</span></span></a>
+                {% elif purchased %}
+                    <a href="{% url 'download' workid %}" class="hijax"><span class="read_itbutton button_text"><span>Read it Now</span></span></a>
+                {% elif borrowed %}
+                    <a href="{% url 'download' workid %}" class="hijax"><span class="read_itbutton button_text"><span>Read it Now</span></span></a>
+                {% elif borrowable %}
+                    <a href="{% url 'borrow' workid %}?library={{library}}" class="hijax"><span class="read_itbutton button_text"><span>Borrow It</span></span></a>
+                {% elif first_ebook %}
+                    <a href="{% url 'download' workid %}" class="hijax"><span class="read_itbutton button_text"><span>Read it Now</span></span></a>
+                {% else %}
+                    <a href="{% url 'work' workid %}"><span class="read_itbutton button_text"><span>Coming Soon</span></span></a>
+                {% endif %}
+                </div>
+            {% elif status == 'ACTIVE' %}
+                <div class="greenpanel_top">
+                    {% comment %}bibliographic data{% endcomment %}
+                    <div class="white_text"> 
+                        <p><a href="{% if workid %}{% url 'work' workid %}{% else %}{% url 'googlebooks' googlebooks_id %}{% endif %}">{{ title }}</a></p>
+                        <p>{{ author }}</p>
+                    </div>
+                    {% comment %}link to work page{% endcomment %}
+                    <div class="moreinfo">
+                            <a href="{% if workid %}{% url 'work' workid %}{% else %}{% url 'googlebooks' googlebooks_id %}{% endif %}" target="_top">More Info</a> 
+                    </div>
+
+                    <div class="unglued_white">
+                        {% if in_library %}
+                            {% if borrowable %}
+                                <p>Available in your library  now!</p>
+                            {% elif lib_thanked %}
+                                <p>Supported by your library!</p>
+                            {% else %}
+                                <p>Available in your library on<br />{{ next_acq.refreshes|date:"M j, Y" }}</p>
+                            {% endif %}
+                        {% else %}
+                            {% if work.last_campaign.type == 1 %}
+                                <b>UNGLUE IT!</b>
+                                <p><b>${{ work.last_campaign.current_total|floatformat:0|intcomma }}</b> raised</p>
+                                <p><b>${{ work.last_campaign.target|floatformat:0|intcomma }}</b> needed</p>
+                                <p>by {{ deadline|naturalday:"M d, Y" }}</p>
+                            {% elif work.last_campaign.type == 2 %}
+                                <b>UNGLUE IT!</b>
+                                <p><b>${{ work.last_campaign.left|floatformat:0|intcomma }}</b> needed</p>
+                                <p>will unglue on </p>
+                                <p>{{ work.last_campaign.cc_date|naturalday:"M d, Y" }}</p>
+                            {% elif work.last_campaign.type == 3 %}
+                                <b>SAY THANKS!</b>
+                                <p><b>${{ work.last_campaign.current_total|floatformat:0|intcomma }}</b> of thanks</p>
+                                <p> from <b>{{ work.last_campaign.supporters_count }}</b> ungluers</p>
+                                <p> and <b>{{ work.last_campaign.anon_count }}</b> others</p>
+                            {% else %}
+                                Never.
+                            {% endif %}
+                        {% endif %}
+                    </div>                    
+                </div>
+                {% if not supported %}
+                    <div class="white_text bottom_button">
+                        {% include "book_panel_addbutton.html" %}	
+                    </div>		
+                {% else %}
+                    <div class="add_button">
+                        {% include "book_panel_addbutton.html" %}	
+                    </div>		
+                    <div class="white_text bottom_button" >
+                        {% if work.last_campaign.type == 1 %}
+                            <a href="{% url 'pledge' work_id=workid %}"><span class="read_itbutton pledge button_text"><span>Support</span></span></a>
+                        {% elif work.last_campaign.type == 2 %}
+                            {% if in_library %}
+                                <a href="{% url 'purchase' work_id=workid %}"><span class="read_itbutton pledge button_text"><span>Reserve It</span></span></a>                           
+                            {% else %}
+                                <a href="{% url 'purchase' work_id=workid %}" title="${{ work.last_campaign.individual_offer.price|floatformat:2 }}"><span class="read_itbutton pledge button_text"><span>Purchase</span></span></a>
+                            {% endif %}
+                        {% elif work.last_campaign.type == 3 %}
+                            <a href="{% url 'thank' workid %}" class="hijax"><span class="read_itbutton button_text"><span>Read it Now</span></span></a>
+                        {% endif %}
+                    </div>
+               {% endif %}
+
+            {% else %}
+                <div class="greenpanel_top">
+                    {% comment %}bibliographic data{% endcomment %}
+                    <div class="white_text"> 
+                        <p><a href="{% if workid %}{% url 'work' workid %}{% else %}{% url 'googlebooks' googlebooks_id %}{% endif %}">{{ title }}</a></p>
+                        <p>{{ author }}</p>
+                    </div>
+                    {% comment %}link to work page{% endcomment %}
+                    <div class="moreinfo">
+                            <a href="{% if workid %}{% url 'work' workid %}{% else %}{% url 'googlebooks' googlebooks_id %}{% endif %}" target="_top">More Info</a> 
+                    </div>
+                    <div class="unglued_white">
+                        {% if status == 'INITIALIZED' %}
+                            <p>Campaign coming soon!</p>
+                        {% elif status == 'SUSPENDED' %}
+                            <p>This campaign has been suspended.</p><br /><p>See the <a href="{% url 'faq' %}">FAQ</a> for details.</p>
+                        {% elif status == 'WITHDRAWN' %}
+                            <p>This campaign has been withdrawn.</p><br /><p>See the <a href="{% url 'faq' %}">FAQ</a> for details.</p>
+                        {% elif status == 'UNSUCCESSFUL' %}
+                            <p>{{ deadline }}</p>
+                            <p>Watch for a new campaign.</p>
+                        {% endif %}
+                    {% include "book_panel_addbutton.html" %}                 
+                    </div>   
+                </div>
+                <div class="white_text bottom_button">
+                    {% include "num_wishes.html" %}	
+                </div>		
+            {% endif %}
+		{% else %}
+			<div class="greenpanel_top">
+                {% comment %}bibliographic data{% endcomment %}
+                <div class="white_text"> 
+                    <p><a href="{% if workid %}{% url 'work' workid %}{% else %}{% url 'googlebooks' googlebooks_id %}{% endif %}">{{ title }}</a></p>
+                    <p>{{ author }}</p>
+                </div>
+                {% comment %}link to work page{% endcomment %}
+                <div class="moreinfo">
+                        <a href="{% if workid %}{% url 'work' workid %}{% else %}{% url 'googlebooks' googlebooks_id %}{% endif %}" target="_top">More Info</a> 
+                </div>
+				<div class="unglued_white">
+                {% if first_ebook %}
+					<b>AVAILABLE!</b>
+                {% else %}
+                   <p>No campaign yet.</p><br /><p>But if lots of ungluers fave this book, maybe there will be!</p>
+                {% endif %}                        
+                <div class="add_button">
+                {% include "book_panel_addbutton.html" %}
+                </div>		
+                </div>
+			</div>
+            <div class="white_text bottom_button">
+                {% if first_ebook %}
+                    <a href="{% url 'download' workid %}" class="hijax"><span class="read_itbutton button_text"><span>Read it Now</span></span></a>
+                {% else %}
+                    {% include "num_wishes.html" %}	
+                {% endif %}                        
+            </div>                    
+
+		{% endif %}
+				
+
+		</div>
+    </div>
+    <div class="listview panelfront side1 book-thumb">
+         <a href="{% if workid %}{% url 'work' workid %}{% else %}{% url 'googlebooks' googlebooks_id %}{% endif %}" target="_top"><img src="{{ thumbnail }}" alt="Book cover" title="book cover" /></a>
+    </div>
+    <div class="listview panelfront side1 book-name">
+        <div class="title">
+            <a href="{% if workid %}{% url 'work' workid %}{% else %}{% url 'googlebooks' googlebooks_id %}{% endif %}">{{ title }}</a>
+        </div>
+        <div class="listview author">{{ author }}</div>
+    </div>
+    
+    {% comment %}same logic as above{% endcomment %}
+    {% if setkw %}
+        {% if setkw in work.subjects.all %}
+            <div class="listview panelfront side1 remove-wishlist">
+                <span class="kw_id" id="l{{ workid }}" data-kw="{{setkw}}">Unset <i>{{setkw}}</i></span>
+            </div>
+        {% else %}
+            <div class="listview panelfront side1 add-wishlist">
+                <span class="kw_id" id="l{{ workid }}" data-kw="{{setkw}}">Set <i>{{setkw}}</i></span>
+            </div>
+        {% endif %}
+    {% elif show_pledge %}
+        <div class="listview panelfront side1 add-wishlist">
+            <span class="booklist_pledge"><a href="{% url 'pledge' work_id=workid %}" class="fakeinput">Support</a></span>
+        </div>
+    {% elif show_purchase %}
+        <div class="listview panelfront side1 add-wishlist">
+            <span class="booklist_pledge"><a href="{% url 'purchase' work_id=workid %}" class="fakeinput" title="${{ work.last_campaign.individual_offer.price|floatformat:2 }}">Purchase</a></span>
+        </div>
+    {% elif request.user.is_anonymous %}
+        <div class="listview panelfront side1 create-account">
+            <span class="hide-for-small-only" title="{% if workid %}{% url 'work' workid %}{% else %}{% url 'googlebooks' googlebooks_id %}{% endif %}">Login to Fave</span>
+        </div>
+    {% elif work in wishlist %}
+        {% if supporter == request.user %}
+            {% comment %} used only on your own supporter page. {% endcomment %}
+            <div class="listview panelfront side1 remove-wishlist">
+                <span id="l{{ workid }}">Un-Fave</span>
+            </div>
+        {% else %}
+            <div class="listview panelfront side1 on-wishlist">
+                {% if purchased %}
+                    <span>{% if purchased.gifts.all.count %}A gift to you!{% else %}Purchased!{% endif %}</span>
+                {% elif borrowed %}
+                    <span>Borrowed! ...until</span>
+                {% elif supported %}
+                    <span>Supported!</span>
+                {% else %}
+                   <span>Faved!</span>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="listview panelfront side1 add-wishlist">
+            {% if on_search_page %}
+            <span class="gb_id" id="l{{ googlebooks_id }}">Fave</span>
+            {% else %}
+            <span class="work_id" id="l{{ workid }}">Fave</span>
+            {% endif %}
+        </div>
+    {% endif %}
+    
+    <div class="listview panelfront side1 booklist-status hide-for-small-only">
+		{% if status == "ACTIVE" %}
+		    {% if work.last_campaign.type == 1 %}
+		        <div class="booklist-status-label">{{ work.percent_of_goal }}%</div>
+		    {% endif %}
+		    {% if work.last_campaign.type == 2 %}
+		        {% if in_library %}
+                    {% if borrowed %}
+                        <span class="booklist-status-text">{{ borrowed.expires|date:"M j, Y" }}</span>
+                    {% else %}
+                        <span class="booklist-status-text" style="line-height:19px">available<br />
+                        {% if next_acq.refreshes %}
+                            {{ next_acq.refreshes|date:"M j, Y" }}
+                        {% else %}
+                        now
+                        {% endif %}
+                        </span>
+                    {% endif %}
+		        {% else %}
+		            <div class="booklist-status-label"><span class="buyit">${{ work.last_campaign.individual_offer.price|floatformat:2|intcomma }}</span> </div>
+		        {% endif %}
+		    {% endif %}
+		    {% if work.last_campaign.type == 3 %}
+		        {% include 'num_wishes.html' %}
+		    {% endif %}
+		{% elif status == "INITIALIZED" %}
+		    <span class="booklist-status-label">Status:&nbsp;</span><span class="booklist-status-text">Coming soon!</span>
+		{% elif status == "SUCCESSFUL" %}
+		    {% if not first_ebook %}
+		        <span class="booklist-status-text">Ebook coming soon</span>
+		    {% else %}
+		        {% include 'num_wishes.html' %}
+		    {% endif %}
+		{% else %}
+		    {% if first_ebook %}
+		        {% include 'num_wishes.html' %}
+		    {% endif %}
+		{% endif %}
+    </div>
+    <div class="listview panelfront side1 icons hide-for-small-only">
+    	{% comment %}
+    		For status icons, we should display...
+    			If there is an ebook: options to get it
+    			If no ebook but there is an active or successful campaign: progress toward goal
+    			If B2U, read, borrow, reserve, purchase
+    			Otherwise: number of wishes
+    	{% endcomment %}
+        {% if purchased or borrowed or first_ebook %}
+            {% if work.epubfiles %}
+                <a href="{% url 'read' workid %}" class="hijax">
+                    <span class="read_itbutton button_text">
+                        <span>Read it Now</span>
+                    </span>
+                </a>
+            {% else %}
+                <a href="{% url 'download' workid %}" class="hijax" title="Download this work">
+                    <div class="read_itbutton">
+                        <span>Read it Now</span>
+                    </div>
+                </a>
+            {% endif %}
+        {% elif borrowable %}
+            <a href="{% url 'borrow' workid %}?library={{library}}" class="hijax" title="Borrow this work"><div class="read_itbutton"><span>Borrow It</span></div></a>
+        {% elif in_library %}
+            <a href="{% url 'purchase' work_id=workid %}" title="Reserve or buy this work"><div class="read_itbutton"><span>Reserve It</span></div></a>
+        {% elif status == 'ACTIVE' or status == 'SUCCESSFUL' %}
+			{% if not library or not in_library %}
+			<div class="booklist-status-img">
+				<img src="/static/images/images/icon-book-37by25-{{ work.percent_unglued }}.png" title="{{ work.percent_of_goal }}% of goal" alt="book list status" />
+			</div>
+        	<div class="booklist-status-label panel">{{ work.percent_of_goal }}%</div>
+        	{% endif %}
+        {% else %}
+            {% include "num_wishes.html" %}
+        {% endif %}
+        
+    </div>
+    <div class="listview panelfront side1 ebooks">
+    </div>
+</div>
+</div>
+{% endwith %}

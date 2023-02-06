@@ -1,0 +1,1 @@
+Your pledge has been {% if up_or_down == 'canceled'%}canceled{% else %}modified{% endif %} for {{ transaction.campaign.work.title}}

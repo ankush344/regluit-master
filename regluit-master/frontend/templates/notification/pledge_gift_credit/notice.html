@@ -1,0 +1,27 @@
+{% extends "notification/notice_template.html" %}
+
+{% block comments_graphical %}
+{% if amount > 0 %}
+{{ user.username }}, {{ amount }} Unglue.it credits have been added to your unglue.it Unglue.it credit account.
+{% else %}
+{{ user.username }}, {{ minus_amount }} Unglue.it credits have been deducted from your unglue.it Unglue.it credit account.
+{% endif %}
+{% endblock %}
+{% block comments_textual %}
+<p>
+You have a balance of {{ user.credit.balance }} Unglue.it credits.
+</p>
+<p>
+You have pledged {{ user.credit.pledged }} Unglue.it credits to ungluing campaigns.
+</p>
+<p>
+You have {{ user.credit.available }} Unglue.it credits available to pledge or transfer.
+</p>
+<p>
+You can manage your Unglue.it credit account <a href="https://unglue.it/gift/">here</a>
+</p>
+<p>
+
+Unglue.it credits can be used in support of ungluing campaigns.
+</p>
+{% endblock %}

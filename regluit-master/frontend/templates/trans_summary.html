@@ -1,0 +1,49 @@
+{% load humanize %}
+{% load libraryauthtags %}
+<div class="trans_summary">
+{% if transaction.campaign.type == 1 %}
+    Your {% if transaction.donation %}donation{% else %}pledge{% endif %}: ${{transaction.amount|floatformat:2|intcomma}}.<br />
+    {% if transaction.premium %}Your premium: {{ transaction.premium.description }}{% endif %}<br />
+    {% if transaction.anonymous %}You asked to support anonymously, so you will be counted but not named on the list of supporters.<br />{% endif %}<br />
+    Acknowledgements: <ul>
+		<li>The unglued ebook will be delivered to your inbox.</li>
+	{% if not transaction.anonymous %}
+		{% ifequal transaction.tier 1  %}
+		<li>You will be listed as a Supporter using the name "<i>{{ transaction.extra.ack_name }}</i>".</li>
+		{% endifequal %}
+		{% ifequal transaction.tier 2  %}
+		<li>You will be listed as a Benefactor using the name "<i>{{ transaction.extra.ack_name }}</i>" with a link to your Unglue.it supporter page.</li>
+		{% endifequal %}
+		{% ifequal transaction.tier 3  %}
+		<li>You will be listed as a Bibliophile using the name "<i>{{ transaction.extra.ack_name }}</i>" with a link to your Unglue.it supporter page.</li>
+		{% endifequal %}
+	{% endif %}
+	{% if transaction.extra.ack_dedication %}
+	    <li>The following dedication will be included: <i>{{ transaction.extra.ack_dedication }}</i></li>
+	{% endif %}
+	</ul>
+{% elif transaction.campaign.type == 2 or not transaction.campaign %}
+    {% if transaction.host == 'credit' %}
+        Amount: ${{transaction.max_amount|floatformat:2|intcomma}}.<br />
+        This amount has been deducted from your Unglue.it credit balance.<br />
+        You have ${{request.user.credit.available|default:"0"}} of credit left.<br />
+    {% else %}
+        Total: ${{transaction.max_amount|floatformat:2|intcomma}}.<br />
+        {% if transaction.max_amount > transaction.amount %}
+            Your credit card has been charged ${{transaction.amount|floatformat:2|intcomma}}.<br />
+            The rest has been deducted from your unglue.it credit balance.<br />
+            You have ${{request.user.credit.available|default:"0"}} of credit left.<br />
+        {% else %}
+            This amount has been charged to your credit card.<br />
+        {% endif %}
+    {% endif %}
+    {% if transaction.campaign %}
+    License type: {{ transaction.offer.get_license_display }}<br />
+	{% if transaction.offer.license == 2 %}
+	    Receiving library: {{ transaction.extra.library_id|libname }}<br />
+	    Number of copies: {{ transaction.extra.copies }}
+	{% endif %}
+	{% endif %}
+{% endif %}
+
+</div>

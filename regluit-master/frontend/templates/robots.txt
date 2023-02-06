@@ -1,0 +1,12 @@
+# Hi Robot, welcome to UnglueIt :-)
+{% ifequal request.META.HTTP_HOST "unglue.it" %}
+User-agent: *
+Disallow: /accounts/
+Disallow: /feedback/
+Disallow: /socialauth/
+Disallow: /search/
+Disallow: /googlebooks/
+{% else %}
+User-agent: *
+Disallow: /
+{% endifequal %}

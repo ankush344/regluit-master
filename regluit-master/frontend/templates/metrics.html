@@ -1,0 +1,169 @@
+{% extends 'basedocumentation.html' %}
+
+{% load humanize %}
+{% block title %} Metrics {% endblock %}
+{% block doccontent %}
+
+<h2>Users</h2>
+<dl>
+<dt> How many ungluers have registered?</dt>
+<dd> 
+    <ul class="terms">
+        <li>{{ users.today.count }} have registered today. {% if users.today.count %}They are 
+            <ul class="terms">{% for user in users.today %}
+                <li><a href="{% url 'supporter' user.username %}"> {{user.username}}</a> {% if user.is_active %} ( {{ user.wishlist.works.count }} wishes) {% if user.library %}{{user.library}}{% endif %}{% endif %}</li>
+            {% endfor %}</ul>{% endif %}
+          <br />{{ wishlists.today.count }} of them have 1 or more items on a wishlist. 
+        </li>
+        <li>{{ users.yesterday.count }} registered yesterday.{% if users.yesterday.count %}They are 
+            <ul class="terms">{% for user in users.yesterday %}
+                <li><a href="{% url 'supporter' user.username %}"> {{user.username}}</a> {% if user.is_active %} ( {{ user.wishlist.works.count }} wishes) {% if user.library %}{{user.library}}{% endif %}{% endif %}</li>
+            {% endfor %}</ul>{% endif %}
+
+            <br />{{ wishlists.yesterday.count }} of them have 1 or more items on a wishlist. 
+        </li>
+        <li>{{ users.days7.count }} have registered in the past 7 days.
+            <br />{{ wishlists.days7.count }} of them have 1 or more items on a list. 
+        </li>
+        <li>{{ users.month.count }} have registered in this month.
+            <br />{{ wishlists.month.count }} of them have 1 or more items on a list. 
+        </li>
+        <li>{{ users.all.count }} have registered in total.
+            <br />{{ wishlists.all.count }} of them have 1 or more items on a list. 
+        </li>
+    </ul>
+    <ul class="terms">
+        <li> {{ users.gr.count }} ungluers are connected to GoodReads.</li>
+        <li> {{ users.lt.count }} ungluers are connected to LibraryThing.</li>
+        <li> {{ users.fb.count }} ungluers are connected to FaceBook.</li>
+        <li> {{ users.tw.count }} ungluers are connected to Twitter.</li>
+        <li> {{ users.libtools.count }} ungluers have enabled Librarian Tools.</li>
+    </ul>
+</dd>
+</dl>
+<h2>Works</h2>
+<dl>
+<dt> How many works have been added to Unglue.it?</dt>
+<dd> 
+    <ul class="terms">
+        <li>{{ works.today.count }} have been added today. {% if works.today.count %}They are 
+            <ul class="terms">{% for work in works.today %}
+                <li><a href="{% url 'work' work.id %}">{{work.title}}</a></li>
+            {% endfor %}</ul>{% endif %}
+        </li>
+        <li>{{ works.yesterday.count }} were added yesterday.
+        </li>
+        <li>{{ works.days7.count }} have been added in the past 7 days.
+        </li>
+        <li>{{ works.month.count }} have been added in this month.
+        </li>
+        <li>{{ works.all.count }} have been added in total.
+        </li>
+        <li>{{ works.free.count }} of them are free.
+        </li>
+    </ul>
+</dd>
+<dt> How often have the works been faved?</dt>
+<dd> 
+    <ul class="terms">
+        <li>{{ works.wishedby100.count }} have been faved by more than 100 ungluers. 
+        </li>
+        <li>{{ works.wishedby50.count }} have been faved by more than 50 ungluers. 
+        </li>
+        <li>{{ works.wishedby20.count }} have been faved by more than 20 ungluers. 
+        </li>
+        <li>{{ works.wishedby10.count }} have been faved by more than 10 ungluers. 
+        </li>
+        <li>{{ works.wishedby5.count }} have been faved by more than 5 ungluers. 
+        </li>
+        <li>{{ works.wishedby2.count }} have been faved by more than 2 ungluers. 
+        </li>
+    </ul>
+</dd>
+</dl>
+<h2>Ebooks</h2>
+<dl>
+<dt> How many ebooks have been added to Unglue.it?</dt>
+<dd> 
+    <ul class="terms">
+        <li>{{ ebooks.today.count }} have been added today. {% if ebooks.today.count %}They are 
+            <ul class="terms">{% for ebook in ebooks.today %}
+                <li><a href="{% url 'work' ebook.edition.work_id %}">{{ebook.edition.work.title}}</a></li>
+            {% endfor %}</ul>{% endif %}
+        </li>
+        <li>{{ ebooks.yesterday.count }} were added yesterday.
+        </li>
+        <li>{{ ebooks.days7.count }} have been added in the past 7 days.
+        </li>
+        <li>{{ ebooks.month.count }} have been added in this month.
+        </li>
+        <li>{{ ebooks.all.count }} have been added in total.
+        </li>
+        <li>{{ ebooks.downloads }} ebooks have been downloaded in total.
+        <ul>
+        <li>{{ ebooks.pdfdownloads }} pdf
+        <li>{{ ebooks.epubdownloads }} epub
+        <li>{{ ebooks.mobidownloads }} mobi
+        </ul>
+        </li>
+    </ul>
+</dd>
+</dl>
+<h2>Ebook Files</h2>
+<dd> 
+    <ul class="terms">
+        <li>{{ ebookfiles.today.count }} have been added today.         </li>
+        <li>{{ ebookfiles.yesterday.count }} were added yesterday.
+        </li>
+        <li>{{ ebookfiles.days7.count }} have been added in the past 7 days.{% if request.user.is_staff %} 
+            <ul class="terms">{% for ebook_file in ebookfiles.days7 %}
+                <li>{{ebook_file.edition.work.title}}:  <a href="{{ebook_file.file.url}}">{{ebook_file.file}}</a> created {{ebook_file.created}} by {{ebook_file.ebook.user}}<br/>
+                ({% if not ebook_file.ebook.active %}in{% endif %}active) <a href="{% url 'new_edition' ebook_file.edition.work_id ebook_file.edition_id %}">edit</a>
+                </li>
+            {% endfor %}</ul>{% endif %}
+
+        </li>
+        <li>{{ ebookfiles.month.count }} have been added in this month.
+        </li>
+        <li>{{ ebookfiles.all.count }} have been added in total.
+        </li>
+    </ul>
+</dd>
+</dl>
+
+<h2>Pledges</h2>
+<dl>
+<dt>How much has been pledged to Unglue.it?</dt>
+<p>Excludes pledges canceled, failed, or otherwise uncollectable.</p>
+<dd> 
+    <ul class="terms">
+        <li>{{ transactions.today.count }} pledges have been made today totaling ${% if transactions.today.sum %}{{ transactions.today.sum }}{% else %}0{% endif %}.
+        <li>{{ transactions.yesterday.count }} pledges were made yesterday totaling ${% if transactions.yesterday.sum %}{{ transactions.yesterday.sum }}{% else %}0{% endif %}.
+        <li>{{ transactions.days7.count }} pledges have been made in the past 7 days totaling ${% if transactions.days7.sum %}{{ transactions.days7.sum }}{% else %}0{% endif %}.
+        <li>{{ transactions.month.count }} pledges have been made in the past month totaling ${% if transactions.month.sum %}{{ transactions.month.sum }}{% else %}0{% endif %}.
+        <li>{{ transactions.count }} pledges have been made altogether totaling ${{ transactions.sum }}.
+        </li>
+    </ul>
+</dd>
+</dl>
+<h2>MARC Records</h2>
+<dl>
+<dt> How many MARC Records have been added to Unglue.it?</dt>
+<dd> 
+    <ul class="terms">
+        <li>{{ marc.today.count }} have been added today. 
+        </li>
+        <li>{{ marc.yesterday.count }} were added yesterday.
+        </li>
+        <li>{{ marc.days7.count }} have been added in the past 7 days.
+        </li>
+        <li>{{ marc.month.count }} have been added in this month.
+        </li>
+        <li>{{ marc.all.count }} have been added in total.
+        </li>
+    </ul>
+</dd>
+</dl>
+
+{% endblock %}
+

@@ -1,0 +1,9 @@
+Alas.  The campaign to unglue {{ campaign.work.title }} (https://{{current_site.domain}}{% url 'work' campaign.work_id %}) has not succeeded.
+
+If you pledged toward this work, your pledge will expire shortly and your credit card will not be charged, nor will you receive any premiums.
+
+If you donated in support of this work, your donation will be used to support other campaigns that qualify for charitable support.
+
+Thank you for your support.
+
+{{ campaign.rightsholder }} (rights holder for {{ campaign.work.title }}) and the Unglue.it team

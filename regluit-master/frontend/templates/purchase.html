@@ -1,0 +1,191 @@
+{% extends 'basepledge.html' %}
+
+{% load humanize %}
+{% load lib_acqs %}
+{% load purchased %}
+
+{% block title %}Purchase{% endblock %}
+
+{% block extra_extra_head %}
+<script type="text/javascript" src="/static/js/reconcile_pledge.js"></script>
+<script type="text/javascript" src="/static/js/loader-gif.js"></script>
+{% endblock %}
+
+{% block news %}
+{% endblock %}
+
+{% block doccontent %}
+<div style="height:15px"></div>
+<div class="book-detail">
+	<div id="book-detail-img" class="book-cover" >
+		<a href="{% url 'work' work.id %}"><img src="{{ work.cover_image_thumbnail }}" alt="{{ work.title }}" title="{{ work.title }}" width="131" height="192" /></a>
+    </div>
+    
+    <div class="book-detail-info">
+		<div class="layout">
+			<h2 class="book-name"><a href="{% url 'work' work.id %}">{{ work.title }}</a></h2>
+			<div>
+				<div class="pubinfo">
+					<h3 class="book-author">{{ work.authors_short }}</h3>
+					<h3 class="book-year">{{ work.publication_date }}</h3>
+				</div>
+			</div>
+		</div>
+                
+        <div>
+            <div class="thermometer" title="{{ work.percent_of_goal }}% of goal">
+                <div class="cover" style="width: {{ cover_width }}%;">
+                </div>
+                <span>{{ work.percent_of_goal }}% of goal</span>
+            </div>
+            <div class="pledged-info noborder">
+                <div class="campaign-status-info">
+                    current ungluing date: 
+                </div>
+                <div class="campaign-status-info explainer">
+                    <span class="current_cc_date">{{ work.last_campaign.cc_date|date:"M j, Y" }}</span>
+                    <span class="explanation">After {{ work.last_campaign.cc_date|date:"M j, Y" }} this book will be available for free to anyone, anywhere. Every purchase before then brings that date closer.</span>
+                </div>
+                <div class="campaign-status-info">
+                    {% if work.last_campaign.supporters_count == 1 %}
+                        <span>1</span> ungluer
+                    {% else %}
+                        <span>{{ work.last_campaign.supporters_count }}</span> ungluers
+                    {% endif %}                                    
+                </div>
+                <div class="campaign-status-info explainer">
+                    <span>${{ work.last_campaign.left|floatformat:0|intcomma  }}</span> to go
+                    <span class="explanation">${{ work.last_campaign.left|floatformat:0|intcomma  }} is the amount it would take to make this ebook free to the world tomorrow.</span>
+                </div>
+            </div>
+            <div class="find-book">
+                <h4>Available formats...</h4>
+                <ul>
+                <li><span class="format_display"><img src="/static/images/mobi32.png" height="32" alt="mobi" title="mobi" /> (for Kindle) </span></li>
+                <li><span class="format_display"><img src="/static/images/epub32.png" height="32" alt="epub" title="epub" /> (for iBooks, Nook, Kobo) </span></li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% ifequal work.last_campaign.status "ACTIVE" %}
+{% lib_acqs %}{% purchased %}
+<div class="jsmodule rounded clearfix">
+    <div class="jsmod-content">
+    	<form class="pledgeform" method="POST" action="#">
+    	    {% if borrowable %}
+    	         <div class="pledge_amount">This ebook can be borrowed from your library.</div>
+    	         <div><a href="{% url 'borrow' work.id %}" class="fakeinput">Borrow Now</a> </div>
+    	         <div style="height:75px;"></div>
+    	    {% else %}
+            {% if next_acq %}
+                <div class="pledge_amount">This ebook can be reserved from your library.</div>
+                {% if on_hold %}
+                    <div class="bigger" style="margin:20px">You are on the {{ on_hold.library }} waiting list for this ebook. 
+                    {% if on_hold.held %}There are {{on_hold.held}} ahead of you.{% else %}You are first on the list.{% endif %} 
+                    You'll be notified when it's available, sometime after {{ next_acq.refreshes|date:"M j, Y"}}.</div>
+                {% else %}
+                    <div class="bigger" style="margin:20px">
+                        Available starting {{ next_acq.refreshes|date:"M j, Y"}} at {{ next_acq.user }}. 
+                        {% if next_acq.holds.count == 1 %}There is {{ next_acq.holds.count }} person waiting.{% endif %}
+                        {% if next_acq.holds.count >  1 %}There are {{ next_acq.holds.count }} people waiting.{% endif %}
+                    </div>
+                    <div><a href="{% url 'reserve' work.id %}?library={{ next_acq.user }}" class="fakeinput">Reserve Now</a> </div>
+                {% endif %}
+                <div style="height:30px;"></div>
+                <div class="bigger" style="height:30px;clear:both;margin:20px">If you'd rather not wait, consider one of the purchase options.</div>
+            {% endif %}
+    	    {% endif %}
+        	{% csrf_token %}
+			{{ form.non_field_errors }}
+        	
+        	{% if work.offers.all|length > 1 %}
+                <div class="pledge_amount premium_level">Purchase Options: Individual, Gift or Library?</div>
+                
+                <div style="height:10px;"></div>
+    
+                <ul class="support menu" id="offers_list">
+                    {% with work.last_campaign.individual_offer as offer  %}
+                    <li class="first">
+                        {% if user_license.purchased %}
+                            <span class="menu-item-desc">Individual license already {% if user_license.purchased.gifts.all.count %}a gift to you!{% else %}purchased!{% endif %}</span>
+                        {% else %}
+                            <label for="offer_{{offer.id}}">
+                                <input type="radio" name="offer_id" id="offer_{{offer.id}}" value="{{offer.id}}" {% if not give %}{% ifequal offer_id offer.id|stringformat:"s" %}checked="checked"{% endifequal %}{% endif %} />
+                                <span class="menu-item-price">
+                                    ${{ offer.price|floatformat:2|intcomma }}
+                                </span>
+                                <span class="menu-item-desc">
+                                    {{ offer.get_license_display }} 
+                                </span>
+                            </label>
+                        {% endif %}
+                    </li>
+                    <li id="give_offer">
+                        <label for="give_{{offer.id}}">
+                            <input type="radio" name="offer_id" id="give_{{offer.id}}" value="give{{offer.id}}" {% if give %}checked="checked"{% endif %} />
+                            <span class="menu-item-price">
+                                ${{ offer.price|floatformat:2|intcomma }}
+                            </span>
+                            <span class="menu-item-desc">
+                                Give this ebook as a gift.
+                            </span>
+                            <div class="menu-item-desc {% if give %}on{% else %}off{% endif %}" id="give_form">
+                                {{ form.give_to.errors }}
+                                <span class="give_label">Recipient email: </span>{{ form.give_to }}
+                                <span class="give_label">Gift Message:</span>
+                                <textarea id="give_message" rows="3" name="give_message" maxlength="512">I'm giving you '{{ work.title }}' at unglue.it. I hope you like it. - {{ request.user.username }} </textarea>
+                            </div>
+                        </label>
+                    </li>
+                    {% endwith %}
+                    {% with work.last_campaign.library_offer as offer  %}
+                    <li class="last">
+                    {% if request.user.profile.libraries %}
+                        <label for="offer_{{offer.id}}">
+                            <input type="radio" name="offer_id" id="offer_{{offer.id}}" value="{{offer.id}}" {% ifequal offer_id offer.id|stringformat:"s"  %}checked="checked"{% else %} {% if user.library %}checked="checked"{% endif %}{% endifequal %} />
+                            <span class="menu-item-price">
+                                ${{ offer.price|floatformat:2|intcomma }}
+                            </span>
+                            <span class="menu-item-desc">
+                                <input type="text" name="copies" value="1" size="2" />
+                                {{ offer.get_license_display }} for 
+                                <select name="library_id" class="std_form">
+                                {% for library in request.user.profile.libraries %}
+                                <option value="{{library.id}}">{{ library }}</option>
+                                {% endfor %}
+                                </select>{{ form.copies.errors }}{{ form.library_id.errors }}
+                            </span>
+                        </label>
+                    {% else %}
+                        <span class="menu-item-desc">
+                            If you <a href="{% url 'library_list' %}">join a Library</a>, you can share and borrow unglue.it ebooks!
+                        </span>
+                    {% endif %}
+                    </li>
+                    {% endwith %}
+                </ul>
+            {% else %}
+                <div style="height:10px;"></div>
+                <input type="hidden" name="offer_id" id="offer_{{ offers.0.id }}" value="{{ offers.0.id }}" checked="checked" />
+                <input type="hidden" name="copies" value="1" />
+         	{% endif %}
+
+			
+			<div id="anonbox" {% if give %}class="off"{% endif %}><I>{{ form.anonymous.label_tag }}</I> {{ form.anonymous.errors }}{{ form.anonymous }}</div>
+			<input name="pledge" type="submit" value="Buy Now" id="pledgesubmit" class="loader-gif" />
+			<input name="decoy" type="submit" id="fakepledgesubmit" disabled="disabled" />
+    	{% if request.user.credit.available > 0 %}
+    	<div class="bigger" style="height:45px;clear:both"> You have an available Unglue.it credit of ${{ request.user.credit.available|intcomma }} which will be applied to your purchase.</div>
+    	{% endif %}
+    	</form> 
+    	  	
+    </div>
+</div>
+{% else %}
+<div>Campaign is not ACTIVE. </div>
+{% endifequal %}
+{% endblock %}
+
+

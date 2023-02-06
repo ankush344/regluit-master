@@ -1,0 +1,59 @@
+{% extends 'notification/notice_template.html' %}
+
+{% load truncatechars %}
+
+{% block comments_book %}
+	<a href="{% url 'work' work.id %}"><img src="{{ work.cover_image_small }}" alt="cover image for {{ work.title }}" /></a>
+{% endblock %}
+
+{% block comments_graphical %}
+	<span><a href="{% url 'work' work.id %}">{{ work.title }}</a> is now available for download</span>
+{% endblock %}
+
+{% block comments_textual %}
+		<p>
+		New ebook files for <a href="{% url 'work' work.id %}">{{ work.title }}</a>, are available for download. 
+		</p>
+
+	<p>Here are the files now available for download:</p>
+	<table>
+	<tr>
+	<th>File type</th>
+	<th>Version</th>
+	<th>License</th>
+	<th>URL</th>
+	<th>Date Added</th>
+	</tr>
+	{% for ebook in work.ebooks %}
+		<tr>
+		<td>{{ ebook.get_format_display }}</td>
+		<td>{{ ebook.version_label }}</td>
+		<td>{{ ebook.get_rights_display }}</td>
+		<td><a href="{{ ebook.download_url }}">{{ ebook.download_url|truncatechars:30 }}</a></td>
+		<td>{{ ebook.created|date:"M d, Y" }}</td>
+		</tr>
+	{% endfor %}
+	
+	</table>
+	
+	<p>
+	{% if work.ebooks.0.rights == 'PD-US' %}
+		A public domain ebook belongs to all of us.  You can do anything you like with it.
+	{% else %}
+		The <a href="https://creativecommons.org/licenses">Creative Commons licensing terms</a> for the ebook allow you to redistribute the files under the specified license terms.  There's no DRM.  Consult <a href="https://creativecommons.org/licenses">CreativeCommons.org</a> for more details.
+	{% endif %}
+	</p>
+	<p>
+	{% if work.last_campaign_status == 'SUCCESSFUL' %}
+		If you have any problems with this unglued ebook, please don't hesitate to <a href="{% url 'feedback' %}?page={{request.build_absolute_uri|urlencode:""}}">contact us</a>. And if you love being able to give this ebook for free to all of your friends, please consider supporting other ebooks for ungluing.
+	{% else %}
+		If you have any problems with these ebook files, please don't hesitate to <a href="{% url 'feedback' %}?page={{request.build_absolute_uri|urlencode:""}}">contact us</a>. For example, if the file isn't what it says it is, or if the licensing or copyright status is misrepresented, we want to know as soon as possble.
+	{% endif %}
+	</p>
+	<p>
+	Thank you!
+	</p>
+	<p>
+	The Unglue.it team
+	</p>
+{% endblock %}

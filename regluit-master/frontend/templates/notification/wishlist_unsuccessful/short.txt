@@ -1,0 +1,1 @@
+Alas: the Unglue.it campaign for {{ campaign.work.title }} has not succeeded

@@ -1,0 +1,25 @@
+{% extends "basepledge.html" %}
+{% load humanize %}
+
+{% block title %}Fund Your {{ action }}{% endblock %}
+
+{% block extra_extra_head %}
+{% include "stripe_stuff.html" %}
+{% include "cardscripts.html" %}
+{% endblock %}
+
+{% block news %}
+{% endblock %}
+
+{% block content %}   
+<div class="jsmodule rounded clearfix central">
+    <div class="jsmod-content">
+    
+    
+    {% include 'cardform.html' %}
+
+	</div>
+</div>
+
+{% endblock %}
+

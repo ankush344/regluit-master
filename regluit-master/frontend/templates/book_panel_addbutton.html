@@ -1,0 +1,42 @@
+{% comment %}
+    status of book vis-a-vis user's wishlist.
+    Non-logged-in users should see login to add option.
+    Logged-in users, book on wishlist:
+        If they've pledged, that should be displayed, with no removal option.
+        If they're on their supporter page, they should have the option to remove it (except when pledged).
+        Elsewhere, they should see that it's on their wishlist.
+    Everyone else should have add-to-wishlist option.
+    (Needed ID for wishlist.js varies on search & supporter page.)
+{% endcomment %}
+			{% if request.user.is_anonymous %}
+				<div class="moreinfo create-account">
+				<span title="{% if workid %}{% url 'work' workid %}{% else %}{% url 'googlebooks' googlebooks_id %}{% endif %}">Login to Fave</span>
+				</div>
+			{% elif supported %}
+				<div class="moreinfo on-wishlist">
+					<a href="{% url 'work' workid %}">Supported!</a>
+				</div>
+			{% elif supporter == request.user %}
+				{% if wishlist %}
+                    <div class="moreinfo remove-wishlist">
+                        <span id="p{{ workid }}">Un-Fave</span>
+                    </div>
+				{% else %}
+				    {% comment %} on the empty-wishlist slideshow {% endcomment %}
+                    <div class="moreinfo add-wishlist">
+                        <span class="work_id" id="p{{ workid }}">Add&nbsp;to&nbsp;Faves</span>
+                    </div>
+				{% endif %}
+			{% elif work in wishlist %}
+				<div class="moreinfo on-wishlist">
+				 <a href="/#">A Fave!</a>
+				</div>
+			{% else %}
+				<div class="moreinfo add-wishlist">
+				{% if on_search_page %}
+				<span class="gb_id" id="p{{ googlebooks_id }}">Add&nbsp;to&nbsp;Faves</span>
+				{% else %}
+				<span class="work_id" id="p{{ workid }}">Add&nbsp;to&nbsp;Faves</span>
+				{% endif %}
+				</div>
+			{% endif %}

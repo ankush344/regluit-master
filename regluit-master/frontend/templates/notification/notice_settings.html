@@ -1,0 +1,218 @@
+{% extends 'notification/base.html' %}
+
+{% load i18n %}
+{% load sass_tags %}
+{% load truncatechars %}
+
+{% block title %}{% trans "Notification Settings" %}{% endblock %}
+
+{% block extra_css %}
+<link type="text/css" rel="stylesheet" href="{% sass_src 'scss/notices.scss' %}" />
+{% endblock %}
+
+{% block extra_js %}
+
+{{ block.super }}
+<script>
+$j(document).ready(function() {
+    jQuery.post("/ml/status/", function(data){
+	    $j("#mailing_list").html(data);
+	});
+});
+</script>
+{% endblock %}
+
+{% block doccontent %}
+    <h2>{% trans "Notification Settings" %}</h2>
+        
+    <a href="{% url 'notification_notices' %}">
+		<div class="notices_menu">
+    		{% trans "See Your Notifications" %}
+		</div>
+	</a>
+<div class="comments"></div>        
+
+    <div class="notice_settings">
+        <form method="POST" action="">
+            {% csrf_token %}
+            <h3>Comment Notifications</h3>
+            <table class="notice_settings table table-striped" width="90%">
+                <tr>
+                    <th>{% trans "Notify me when..." %}</th>
+                    {% for header in notice_settings.column_headers %}
+                        <th>{{ header }}</th>
+                    {% endfor %}
+                </tr>
+                {% for row in notice_settings.rows %}
+                  {% if row.notice_type.label|truncatechars:11 == 'comment_...' %}
+                    <tr class="{% cycle 'row1' 'row2' %}">
+                        <td>
+                            <span class="notice_type_description">{% trans row.notice_type.description %}</span>
+                        </td>
+                        {% for cell in row.cells %}
+                            <td>
+                                <input type="checkbox" name="{{ cell.0 }}" {% if cell.1 %}checked="yes"{% endif %}/>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                  {% endif %}
+                {% endfor %}
+                <tr>
+                    <td colspan="2" id="last"><input type="submit" value="{% trans 'Change' %}"></input></td>
+                </tr>
+            </table>
+            <h3>Book List Notifications</h3>
+            <table class="notice_settings table table-striped" width="90%">
+                <tr>
+                    <th>{% trans "Notify me when..." %}</th>
+                    {% for header in notice_settings.column_headers %}
+                        <th>{{ header }}</th>
+                    {% endfor %}
+                </tr>
+                {% for row in notice_settings.rows %}
+                  {% if row.notice_type.label|truncatechars:12 == 'wishlist_...' %}
+                    <tr class="{% cycle 'row1' 'row2' %}">
+                        <td>
+                            <span class="notice_type_description">{% trans row.notice_type.description %}</span>
+                        </td>
+                        {% for cell in row.cells %}
+                            <td>
+                                <input type="checkbox" name="{{ cell.0 }}" {% if cell.1 %}checked="yes"{% endif %}/>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                  {% endif %}
+                {% endfor %}
+                <tr>
+                    <td colspan="2" id="last"><input type="submit" value="{% trans 'Change' %}"></input></td>
+                </tr>
+            </table>
+            <h3>Pledge Notifications</h3>
+            <table class="notice_settings table table-striped" width="90%">
+                <tr>
+                    <th>{% trans "Notify me when..." %}</th>
+                    {% for header in notice_settings.column_headers %}
+                        <th>{{ header }}</th>
+                    {% endfor %}
+                </tr>
+                {% for row in notice_settings.rows %}
+                  {% if row.notice_type.label|truncatechars:10 == 'pledge_...' %}
+                    <tr class="{% cycle 'row1' 'row2' %}">
+                        <td>
+                            <span class="notice_type_description">{% trans row.notice_type.description %}</span>
+                        </td>
+                        {% for cell in row.cells %}
+                            <td>
+                                <input type="checkbox" name="{{ cell.0 }}" {% if cell.1 %}checked="yes"{% endif %}/>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                  {% endif %}
+                {% endfor %}
+                <tr>
+                    <td colspan="2" id="last"><input type="submit" value="{% trans 'Change' %}"></input></td>
+                </tr>
+            </table>
+            <h3>Credit Card Notifications</h3>
+            <table class="notice_settings table table-striped" width="90%">
+                <tr>
+                    <th>{% trans "Notify me when..." %}</th>
+                    {% for header in notice_settings.column_headers %}
+                        <th>{{ header }}</th>
+                    {% endfor %}
+                </tr>
+                {% for row in notice_settings.rows %}	    
+                  {% if row.notice_type.label|truncatechars:11 == 'account_...' %}
+                    <tr class="{% cycle 'row1' 'row2' %}">
+                        <td>
+                            <span class="notice_type_description">{% trans row.notice_type.description %}</span>
+                        </td>
+                        {% for cell in row.cells %}
+                            <td>
+                                <input type="checkbox" name="{{ cell.0 }}" {% if cell.1 %}checked="yes"{% endif %}/>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                  {% endif %}
+                {% endfor %}
+                <tr>
+                    <td colspan="2" id="last"><input type="submit" value="{% trans 'Change' %}"></input></td>
+                </tr>
+            </table>	    
+            <h3>Rights Holder Notifications</h3>
+            <table class="notice_settings table table-striped" width="90%">
+                <tr>
+                    <th>{% trans "Notify me when..." %}</th>
+                    {% for header in notice_settings.column_headers %}
+                        <th>{{ header }}</th>
+                    {% endfor %}
+                </tr>
+                {% for row in notice_settings.rows %}
+                  {% if row.notice_type.label|truncatechars:10 == 'rights_...' %}
+                    <tr class="{% cycle 'row1' 'row2' %}">
+                        <td>
+                            <span class="notice_type_description">{% trans row.notice_type.description %}</span>
+                        </td>
+                        {% for cell in row.cells %}
+                            <td>
+                                <input type="checkbox" name="{{ cell.0 }}" {% if cell.1 %}checked="yes"{% endif %}/>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                  {% endif %}
+                {% endfor %}
+                <tr>
+                    <td colspan="2" id="last"><input type="submit" value="{% trans 'Change' %}"></input></td>
+                </tr>
+            </table>
+            <h3>Library Notifications</h3>
+            <table class="notice_settings table table-striped" width="90%">
+                <tr>
+                    <th>{% trans "Notify me when..." %}</th>
+                    {% for header in notice_settings.column_headers %}
+                        <th>{{ header }}</th>
+                    {% endfor %}
+                </tr>
+                {% for row in notice_settings.rows %}
+                  {% if row.notice_type.label|truncatechars:11 == 'library_...' %}
+                    <tr class="{% cycle 'row1' 'row2' %}">
+                        <td>
+                            <span class="notice_type_description">{% trans row.notice_type.description %}</span>
+                        </td>
+                        {% for cell in row.cells %}
+                            <td>
+                                <input type="checkbox" name="{{ cell.0 }}" {% if cell.1 %}checked="yes"{% endif %}/>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                  {% endif %}
+                {% endfor %}
+                <tr>
+                    <td colspan="2" id="last"><input type="submit" value="{% trans 'Change' %}"></input></td>
+                </tr>
+            </table>
+        </form>
+
+        <h3>Your mailing list subscription</h3>
+        <div id="mailing_list"></div>
+        <h3>Your email</h3>
+        {% if user.email %}
+            <p>
+            	{{ user.email }}<br />
+            </p>
+            <p>
+                (You can change this under <a href="{% url 'manage_account' %}">Account</a>.)
+            </p>
+        {% else %}
+            <div class="errorlist">
+                You do not have a verified email address to which notices can be sent.
+                You can add one by going to <a href="{% url 'manage_account' %}">Account</a>.
+            </div>
+        {% endif %}
+
+    </div>
+{% endblock %}
+
+                {% for row in notice_settings.rows %}
+			    {{row.notice_type.label}}
+                {% endfor %}

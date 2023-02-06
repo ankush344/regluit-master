@@ -1,0 +1,137 @@
+{% extends 'basedocumentation.html' %}
+
+{% block title %} Press Information{% endblock %}
+{% block doccontent %}
+<h1>Press</h1>
+<div class="presstoc">
+	<div>
+		<a href="#latest">Latest Coverage</a><br />
+		<a href="#overview">Overview</a><br />
+	</div>
+	<div>
+		<a href="#press">Media Highlights</a><br />
+		<a href="#blogs">Other Coverage</a><br />
+	</div>
+	<div>
+		<a href="#video">Video</a><br />
+		<a href="#newsletters">Newsletters</a><br />
+	</div>
+	<div>
+		<a href="#images">Logos &amp; Images</a><br />
+		<a href="#releases">Press Releases</a><br />
+	</div>
+	<div class="pressemail">
+		Additional press questions?  Please email <a href="mailto:info@ebookfoundation.org">info@ebookfoundation.org</a>.
+	</div>
+	<div class="spacer"></div>
+	{% if request.user.is_staff %}
+	    <div class="pressemail">
+	        Hi, {{ request.user.username }}.  Since you're a staff member, you can <a href="{% url 'press_submitterator' %}">add new press items</a>.
+	    </div>
+    	<div class="spacer"></div>
+    {% endif %}
+</div>
+
+<a id="latest"></a><h2>Latest Coverage</h2>
+<div class="pressarticles">
+{% for item in latest_items %}
+    {% include "press_item.html" %}
+{% endfor %}
+</div>
+
+<a id="overview"></a><h2>Overview</h2>
+<dl>
+<dt>What?</dt>
+<dd>Unglue.it works to make free ebooks sustainable.
+<br /><br />
+We provide distribution infrastructure for free ebooks - we're a bookstore for books that want to be free. We're building a database of free-licensed ebooks.
+<br /><br />
+We help archive books that are already free, and we help readers find and download them. We help creators ask those readers for support.
+<br /><br />
+We run crowdfunding campaigns to raise money to make ebooks free.  In Buy-to-Unglue campaigns, the creators set a revenue target that triggers the free release of the rbook. In Pledge-to-Unglue campaigns, rights holders set the amount needed for ungluing, and if enough reders pledge there support, the book becomes free. 
+</dd>
+<dt>Why?</dt>
+<dd>Most books have a greater purpose than just making money for the creators. In many cases, that purpose is best served by making the book free to read. And it's that greater purpose that drives us.<br /><br />
+When books have a clear, established legal license which promotes use, they can be read more widely, leading to enjoyment, scholarship, and innovation.  By raising money to support authors and publishers, Unglue.it encourages the benefits of openness while ensuring sustainability for creators. </dd>
+<dt>Who?</dt>
+<dd>Unglue.it is a service of The Free Ebook Foundation.  We come from the worlds of entrepreneurship, linked data, physics, publishing, education, and library science, to name a few.  You can learn more about us at our <a href="/about/">about page</a>.</dd>
+<dt>When?</dt>
+<dd>Unglue.it launched its first crowdfunding campaign on May 17, 2012. Buy-to-Unglue launched in January of 2014, and Thanks-for-Ungluing launched in April of 2014.</dd>
+<dt>Where?</dt>
+<dd>The Free Ebook Foundation is a New Jersey non-for-profit corporation, but its employees and contractors live and work across North America.  The best way to contact us is by email, <a href="mailto:info@ebookfoundation.org">info@ebookfoundation.org</a>.</dd>
+<dt>What's your technology?</dt>
+<dd>Unglue.it is built using <a href="http://python.org/">Python</a> and the <a href="https://www.djangoproject.com/">Django framework</a>.  We use data from the <a href="https://code.google.com/apis/books/docs/v1/getting_started.html">Google Books</a>, <a href="https://openlibrary.org/developers/api">Open Library</a>, <a href="https://www.librarything.com/api">LibraryThing</a>, and <a href="https://www.goodreads.com/api">GoodReads</a> APIs; we appreciate that they've made these APIs available, and we're returning the favor with <a href="/api/help">our own API</a>.  You're welcome to use it.  We use <a href="http://lesscss.org/">Less</a> to organize our CSS.  We process pledges with <a href="https://stripe.com/">Stripe</a>.  We collaborate on our code at <a href="https://github.com/">GitHub</a> and deploy to the cloud with <a href="https://aws.amazon.com/ec2/">Amazon EC2</a>.</dd>
+<dt>What licenses are supported?  </dt>
+<dd>
+We support the  <a href="https://creativecommons.org/licenses/">Creative Commons</a> licenses in all of our programs.  Ebooks with these licenses are free and legal for everyone to read, copy, and share worldwide and requires that the author attribution.<br /><br />
+We support a additional Free Licenses in our Thanks-for-Ungluing program.
+</dd>
+
+<dt>I have more questions...</dt>
+<dd>Please consult our <a href="/faq/">FAQ</a> (sidebar at left); join the site and explore its features for yourself; or email us, <a href="info@ebookfoundation.org">info@ebookfoundation.org</a>.</dd>
+</dl>
+<a id="press"></a><h2>Media Highlights</h2>
+<div class="pressarticles">
+{% for item in highlighted_items %}
+    {% include "press_item.html" %}
+{% endfor %}
+</div>
+<a id="blogs"></a><h2>Other Coverage</h2>
+<div class="pressarticles">
+{% for item in all_items %}
+    {% include "press_item.html" %}
+{% endfor %}
+</div>
+
+<a id="video"></a><h2>Video</h2>
+<div class="pressvideos">
+
+<div>
+	<iframe src="http://research.microsoft.com/apps/video/ifVideo.aspx?id=232715" style="width:480px; height:270px; overflow:hidden; border:none;" scrolling="no"></iframe><br />
+	<I>Nov 2014</I><br />
+	Eric Hellman at "Shaking It Up".
+</div>
+<div>
+	<iframe width="480" height="270" src="https://www.youtube-nocookie.com/embed/HxjTW4OBouo?rel=0" frameborder="0" allowfullscreen></iframe><br />
+	<I>June 2012</I><br />
+	Eric Hellman at Book Expo America.
+</div>
+<div>
+    <div class="mediaborder">
+	<object width="480" height="270"><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="https://secure.vimeo.com/moogaloop.swf?clip_id=39352026&amp;server=secure.vimeo.com&amp;show_title=1&amp;show_byline=0&amp;show_portrait=0&amp;color=00adef&amp;fullscreen=1&amp;autoplay=0&amp;loop=0" /><embed src="https://secure.vimeo.com/moogaloop.swf?clip_id=39352026&amp;server=secure.vimeo.com&amp;show_title=1&amp;show_byline=0&amp;show_portrait=0&amp;color=00adef&amp;fullscreen=1&amp;autoplay=0&amp;loop=0" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="480" height="270"></embed></object></div><br />
+	<I>March 2012</I><br />
+	Andromeda Yelton; "The Future of Ebooks" panel at <a href="http://www.infotoday.com/cil2012/">Computers in Libraries</a>.
+</div>
+<div>
+	<iframe width="480" height="274" src="//www.youtube-nocookie.com/embed/36o0o9aGbKc?rel=0" frameborder="0" allowfullscreen></iframe><br />
+	<I>February 2012</I><br />
+	Eric Hellman on the <a href="http://oreilly.com/toc/">Tools of Change</a> podcast.
+</div>
+<div>
+	<iframe width="480" height="274" src="//www.youtube-nocookie.com/embed/YNGPCR-iM24?rel=0" frameborder="0" allowfullscreen></iframe><br />
+	<I>November 2011</I><br />
+	Eric Hellman, "The Network is Overrated"; talk at <a href="https://bib.archive.org/">Books in Browsers</a> 2011.
+</div>
+
+</div>
+<div class="press_spacer"></div>
+
+<a id="newsletters"></a><h2>Newsletters</h2>
+
+{% comment %}autogenerated by mailchimp{% endcomment %}
+<script src="/campaign_archive.js" type="text/javascript"></script>
+
+<p>You can also <a href="http://eepurl.com/fKLfI">subscribe</a> to our newsletter.</p>
+
+<a id="images"></a><h2>Logos &amp; Images</h2>
+<div class="pressimages clearfix">
+	<div class="outer">
+		<div><a href="/static/images/logo.png"><img src="/static/images/logo.png" alt="big logo" /></a></div>
+		<div class="text"><p>Full logo, 161px x 70px</p></div>
+	</div>
+	<div class="outer">
+		<div><a href="/static/images/unglued.png"><img src="/static/images/unglued.png" alt="small Logo" /></a></div>
+		<div class="text"><p>Logo image only, 44px x 30px</p></div>
+	</div>
+
+{% endblock %}

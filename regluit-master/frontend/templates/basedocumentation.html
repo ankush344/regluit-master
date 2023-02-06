@@ -1,0 +1,37 @@
+{% extends "registration/registration_base.html" %}
+
+{% load sass_tags %}
+{% block extra_js %}
+
+<script type="text/javascript" src="/static/js/definitions.js"></script>
+{% endblock %}
+{% block extra_extra_head %}
+<link type="text/css" rel="stylesheet" href="{% sass_src 'scss/landingpage4.scss' %}" />
+<link type="text/css" rel="stylesheet" href="{% sass_src 'scss/book_panel2.scss' %}" />
+<link type="text/css" rel="stylesheet" href="{% sass_src 'scss/faq.scss' %}" />
+
+{% endblock %}
+
+{% block title %}{% endblock %}
+
+{% block topsection %}
+{% with hide_learn_more='on' %}
+{% include "learn_more.html" %}
+{% endwith %}
+{% endblock %}
+
+{% block content %}
+<div class="faq-container">
+    <div class="faq-menu">
+        {% include "faqmenu.html" %}
+        {% block subnav %}{% endblock %}
+    </div>
+    <div class="faq-main doc">
+        {% block doccontent %}
+        {% endblock %}
+    </div>
+</div>
+
+{% endblock %}
+
+

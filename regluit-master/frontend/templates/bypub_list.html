@@ -1,0 +1,30 @@
+{% extends 'work_list.html' %}
+
+{% load el_pagination_tags %}
+{% load lang_utils %}
+
+{% block title %} Works published by {{ pubname }} {% endblock %}
+{% block userblock1 %}
+    {% if publisher %}
+    <div class="publogo"><a href="{{ publisher.url }}"><img src="{{ publisher.logo_url }}" alt="{{ pubname }} logo" width="220" /></a></div>
+    {% else %}
+    {{ block.super }}
+    {% endif %}
+{% endblock %}
+{% block userblock2 %}
+    {% if publisher %}
+    <span class="special-user-name">Books from <a href="{{ publisher.url }}">{{ pubname }}</a> {% if pub_lang %}( {{pub_lang|ez_lang_name}} ) {% endif %}</span>
+    <div class="description">{{ publisher.description|safe }}</div>
+    {% else %}
+    <span class="special-user-name">Books from {{ pubname }} {% if pub_lang %}( {{pub_lang|ez_lang_name}} ) {% endif %}</span>
+{% endif %}
+{% endblock %}
+
+{% block add_more %}{% endblock %}
+
+{% block marcform %}
+<form method="GET" action="{% url 'bypubname_list_marc' facet pubname.id %}">
+    {% include 'marc_form.html' %}
+    <input type="submit" name="submit" value="download MARC" id="submit">
+</form>
+{% endblock %}

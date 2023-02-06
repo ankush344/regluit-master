@@ -1,0 +1,47 @@
+<!DOCTYPE html>{% load sass_tags %}
+<html>
+<head>
+    <title>unglue.it: {{work.title}}</title>
+    <link type="text/css" rel="stylesheet" href="{% sass_src 'scss/sitewide4.scss' %}" />
+    <link type="text/css" rel="stylesheet" href="{% sass_src 'scss/book_panel2.scss' %}" />
+
+    <style type="text/css">
+    	body {
+    		margin:0;
+    		padding:0;
+    		background: none;
+    	}
+    </style>
+
+    <script type="text/javascript" src="{{ jquery_home }}" ></script>
+    <script type="text/javascript" src="{{ jquery_ui_home }}"></script>
+
+	<!-- toggle to panelview state instead of listview default -->
+    <script type="application/x-javascript">
+        jQuery(document).ready(function($) { 
+            $('.listview').addClass("panelview").removeClass("listview");
+        });    
+    </script>    
+
+    <script type="text/javascript" src="/static/js/wishlist.js"></script>
+    <script type="text/javascript" src="/static/js/greenpanel.js"></script>
+
+	<base target="_blank" />    
+</head>
+
+<body>
+
+<!--- editions --->
+<span id="content-block">
+{% if work %}
+  {% with work.googlebooks_id as googlebooks_id %}
+  {% include "book_panel.html" %}
+{% endwith %}
+{% else %}
+        <p class="classname">No work corresponding to ISBN {{isbn}} available</p>
+{% endif %}
+</span>
+</body>
+</html>
+
+

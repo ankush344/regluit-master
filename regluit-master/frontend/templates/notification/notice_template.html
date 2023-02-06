@@ -1,0 +1,33 @@
+<div class="comments clearfix">
+	<div class="comments_info clearfix">
+		<div class="comments_book">
+			{% block comments_book %}
+				{% comment %}
+				Your cover image goes here. e.g.:
+				<a href="{% url 'work' work.id %}"><img src="{{ comment.content_object.cover_image_small }}" alt="cover image for {{ work.title }}" /></a>
+				modify as needed for your local context variables
+				{% endcomment %}
+			{% endblock %}
+		</div>
+		<span class="comments_graphical">{% block comments_graphical %}{% comment %}
+				This is where you put your headline.
+				Brief text, graphics-oriented info like user avatars and campaign status icons.
+				e.g.:
+				<a href="{% url 'supporter' comment.user %}">
+					<img class="user-avatar" src="{{ comment.user.profile.avatar_url }}" height="50" width="50" alt="Avatar for {{ comment.user }}" title="{{ comment.user }}" />
+				</a>
+				<span><a href="{% url 'supporter' comment.user %}">{{ comment.user.username }}</a> on <a href="{{ work_url }}?tab=2">{{ comment.content_object.title }}</a></span>{% endcomment %}{% endblock %}
+				<br /><i>{% now "M d Y, h:i A"%}</i><br />
+		</span>
+		<hr />
+		<span class="comments_textual">
+			{% block comments_textual %}
+				{% comment %}
+				This is where you put the textual part of your message.
+				Examples include the text of comments, details about credit card charges, etc.
+				{% endcomment %}
+			{% endblock %}
+		</span>
+	</div>
+	
+</div>

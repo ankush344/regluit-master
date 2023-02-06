@@ -1,0 +1,25 @@
+{% extends 'notification/notice_template.html' %}
+
+{% load humanize %}
+
+{% block comments_book %}
+	<a href="{% url 'work' campaign.work_id %}"><img src="{{ campaign.work.cover_image_small }}" alt="cover image for {{ campaign.work.title }}" /></a>
+{% endblock %}
+
+{% block comments_graphical %}
+	<img src="/static/images/images/icon-book-37by25-{{ campaign.work.percent_unglued }}.png" alt="almost-unglued icon" title="almost-unglued icon" />
+	<span>The campaign to unglue a book you've faved, {{ campaign.work.title}}, is close to succeeding!</span>
+{% endblock %}
+
+{% block comments_textual %}
+	{% if pledged %}
+	Your pledge is helping us reach the campaign's target price of {{ campaign.target }}.  Will you help again by sharing this campaign with your friends?
+	{% else %}
+	You can help us give this book to the world by <a href="{% url 'pledge' work_id=campaign.work_id %}">pledging</a> or by sharing this campaign with your friends.
+	{% endif %}
+
+	{% url 'work' campaign.work_id as work_url %}
+	{% include "notification/sharing_block.html" %}
+	
+	Thank you!
+{% endblock %}
